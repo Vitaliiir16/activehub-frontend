@@ -103,6 +103,7 @@ test("organizer creates an activity and member books, pays and receives a refund
     await user.goto(`/events?cityId=all&title=${encodeURIComponent(title)}`);
     await user.getByRole("link", { name: title, exact: true }).last().click();
     await user.getByRole("link", { name: "Book session" }).click();
+    await expect(user.getByRole("region", { name: "Current price breakdown" })).toContainText("100.00");
     await user
       .getByRole("button", { name: "Reserve places", exact: true })
       .click();

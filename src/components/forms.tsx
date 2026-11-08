@@ -28,7 +28,13 @@ export function useFormState() {
   return { busy, message, success, fields, run };
 }
 export type FormState = ReturnType<typeof useFormState>;
-export function Feedback({ state }: { state: FormState }) {
+export function Feedback({
+  state,
+  includeFieldErrors = false,
+}: {
+  state: FormState;
+  includeFieldErrors?: boolean;
+}) {
   return (
     <>
       {state.message && (
@@ -37,6 +43,11 @@ export function Feedback({ state }: { state: FormState }) {
           {state.fields.form?.map((text) => (
             <p key={text}>{text}</p>
           ))}
+          {includeFieldErrors &&
+            Object.entries(state.fields)
+              .filter(([name]) => name !== "form")
+              .flatMap(([, messages]) => messages)
+              .map((text, index) => <p key={index}>{text}</p>)}
         </div>
       )}
       {state.success && (

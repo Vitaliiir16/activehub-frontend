@@ -1,6 +1,7 @@
 import { useCallback, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, type Event, type EventSession } from "../api/client";
+import { BookingList } from "./Bookings";
 import { Feedback, text, useFormState } from "../components/forms";
 import {
   ages,
@@ -10,6 +11,7 @@ import {
   kyivInput,
   label,
   minor,
+  money,
   Pagination,
   skills,
   useRemote,
@@ -115,7 +117,7 @@ export function EventForm({
   return (
     <form className="panel" onSubmit={submit}>
       <h2>{event ? "Edit event" : "Create an event"}</h2>
-      <Feedback state={state} />
+      <Feedback state={state} includeFieldErrors />
       <Feedback state={dict.state} />
       <div className="filter-grid">
         <label>
@@ -142,7 +144,12 @@ export function EventForm({
         </label>
         <label>
           City
-          <select aria-label="City" name="cityId" required defaultValue={event?.city.id ?? ""}>
+          <select
+            aria-label="City"
+            name="cityId"
+            required
+            defaultValue={event?.city.id ?? ""}
+          >
             <option value="" disabled>
               Select city
             </option>
@@ -320,7 +327,7 @@ function SessionEditor({
       }}
     >
       <SessionFields session={session} />
-      <Feedback state={state} />
+      <Feedback state={state} includeFieldErrors />
       <button disabled={state.busy}>Save session</button>
     </form>
   );
@@ -366,17 +373,43 @@ export function EventManager() {
             <Link to={`/organizer/bookings?eventId=${id}`}>View bookings</Link>
           </div>
           <div className="kind-tabs">
-            {["sessions", "details", "photos", "status"].map((v) => (
+            {[
+              "overview",
+              "sessions",
+              "bookings",
+              "details",
+              "photos",
+              "status",
+            ].map((v) => (
               <button
                 key={v}
                 onClick={() => setTab(v)}
                 className={tab === v ? "" : "secondary"}
               >
-                {label(v)}
+                {v === "details" ? "Edit" : label(v)}
               </button>
             ))}
           </div>
-          <Feedback state={state} />
+          <Feedback state={state} includeFieldErrors />
+          {tab === "overview" && (
+            <section className="panel">
+              <h2>Overview</h2>
+              <p className="preserve-lines">{event.description}</p>
+              <p>
+                {label(event.kind)} - {event.direction.name} -{" "}
+                {label(event.skill)} - {label(event.age)}
+              </p>
+              <p>
+                {event.city.name} - {event.address}
+              </p>
+              <p>Current price: {money(event.effectivePriceMinor)}</p>
+              <p>
+                {label(event.confirmationMode)} confirmation -{" "}
+                {label(event.status)}
+              </p>
+            </section>
+          )}
+          {tab === "bookings" && <BookingList owned eventId={id} />}
           {tab === "details" && (
             <EventForm event={event} onSaved={() => refresh()} />
           )}{" "}

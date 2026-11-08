@@ -19,7 +19,8 @@ export type Conversation = components["schemas"]["Conversation"];
 export type ChatMessage = components["schemas"]["Message"];
 export type AccountSummary = components["schemas"]["AccountSummary"];
 export type AdminUserDetail = components["schemas"]["AdminUserDetail"];
-export type AdminOrganizerDetail = components["schemas"]["AdminOrganizerDetail"];
+export type AdminOrganizerDetail =
+  components["schemas"]["AdminOrganizerDetail"];
 export type Plan = components["schemas"]["SubscriptionPlan"];
 export type UserSubscription = components["schemas"]["UserSubscription"];
 export type Statistics = components["schemas"]["Statistics"];
@@ -89,21 +90,34 @@ export function createApi(baseUrl = "") {
     return task;
   }
   return {
-    async statistics(query: paths["/api/admin/statistics"]["get"]["parameters"]["query"] = {}) {
-      return result(await client.GET("/api/admin/statistics", { params: { query } }));
+    quoteBooking(body: components["schemas"]["BookingCreate"]) {
+      return mutate(async (headers) =>
+        result(await client.POST("/api/bookings/quote", { headers, body })),
+      );
+    },
+    async statistics(
+      query: paths["/api/admin/statistics"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(
+        await client.GET("/api/admin/statistics", { params: { query } }),
+      );
     },
     async organizerDashboard() {
       return result(await client.GET("/api/organizer/dashboard"));
     },
     async adminOrganizerStatistics(id: string) {
       return result(
-        await client.GET("/api/admin/organizers/{id}/statistics", { params: { path: { id } } }),
+        await client.GET("/api/admin/organizers/{id}/statistics", {
+          params: { path: { id } },
+        }),
       );
     },
     async adminUsers(
       query: paths["/api/admin/users"]["get"]["parameters"]["query"] = {},
     ) {
-      return result(await client.GET("/api/admin/users", { params: { query } }));
+      return result(
+        await client.GET("/api/admin/users", { params: { query } }),
+      );
     },
     async adminUser(id: string) {
       return result(
@@ -157,7 +171,10 @@ export function createApi(baseUrl = "") {
         }),
       );
     },
-    adminEditOrganizer(id: string, body: components["schemas"]["ProfilePatch"]) {
+    adminEditOrganizer(
+      id: string,
+      body: components["schemas"]["ProfilePatch"],
+    ) {
       return mutate(async (headers) =>
         result(
           await client.PATCH("/api/admin/organizers/{id}", {
@@ -168,7 +185,10 @@ export function createApi(baseUrl = "") {
         ),
       );
     },
-    adminOrganizerStatus(id: string, body: components["schemas"]["StatusChange"]) {
+    adminOrganizerStatus(
+      id: string,
+      body: components["schemas"]["StatusChange"],
+    ) {
       return mutate(async (headers) =>
         result(
           await client.PATCH("/api/admin/organizers/{id}/status", {
@@ -193,7 +213,9 @@ export function createApi(baseUrl = "") {
     async adminEvents(
       query: paths["/api/admin/events"]["get"]["parameters"]["query"] = {},
     ) {
-      return result(await client.GET("/api/admin/events", { params: { query } }));
+      return result(
+        await client.GET("/api/admin/events", { params: { query } }),
+      );
     },
     adminEventStatus(id: string, status: "ACTIVE" | "BLOCKED", reason: string) {
       return mutate(async (headers) =>
@@ -279,7 +301,9 @@ export function createApi(baseUrl = "") {
       query: paths["/api/admin/subscription-plans"]["get"]["parameters"]["query"] = {},
     ) {
       return result(
-        await client.GET("/api/admin/subscription-plans", { params: { query } }),
+        await client.GET("/api/admin/subscription-plans", {
+          params: { query },
+        }),
       );
     },
     adminArchivePlan(id: string) {
@@ -287,7 +311,10 @@ export function createApi(baseUrl = "") {
         result(
           await client.POST("/api/admin/subscription-plans/{id}/archive", {
             headers,
-            params: { path: { id }, header: { "Idempotency-Key": crypto.randomUUID() } },
+            params: {
+              path: { id },
+              header: { "Idempotency-Key": crypto.randomUUID() },
+            },
           }),
         ),
       );
@@ -302,7 +329,10 @@ export function createApi(baseUrl = "") {
           : await client.GET("/api/admin/directions", { params: { query } }),
       );
     },
-    adminCreateDictionary(kind: "cities" | "directions", body: components["schemas"]["DictionaryWrite"]) {
+    adminCreateDictionary(
+      kind: "cities" | "directions",
+      body: components["schemas"]["DictionaryWrite"],
+    ) {
       return mutate(async (headers) =>
         result(
           kind === "cities"
@@ -311,12 +341,24 @@ export function createApi(baseUrl = "") {
         ),
       );
     },
-    adminEditDictionary(kind: "cities" | "directions", id: string, body: components["schemas"]["DictionaryWrite"]) {
+    adminEditDictionary(
+      kind: "cities" | "directions",
+      id: string,
+      body: components["schemas"]["DictionaryWrite"],
+    ) {
       return mutate(async (headers) =>
         result(
           kind === "cities"
-            ? await client.PATCH("/api/admin/cities/{id}", { headers, params: { path: { id } }, body })
-            : await client.PATCH("/api/admin/directions/{id}", { headers, params: { path: { id } }, body }),
+            ? await client.PATCH("/api/admin/cities/{id}", {
+                headers,
+                params: { path: { id } },
+                body,
+              })
+            : await client.PATCH("/api/admin/directions/{id}", {
+                headers,
+                params: { path: { id } },
+                body,
+              }),
         ),
       );
     },
@@ -349,9 +391,7 @@ export function createApi(baseUrl = "") {
     },
     setLoyaltyRules(body: LoyaltyRules) {
       return mutate(async (headers) =>
-        result(
-          await client.PUT("/api/admin/loyalty/rules", { headers, body }),
-        ),
+        result(await client.PUT("/api/admin/loyalty/rules", { headers, body })),
       );
     },
     assignCard(id: string, body: components["schemas"]["CardAssignment"]) {
@@ -913,7 +953,11 @@ export function createApi(baseUrl = "") {
       return result(
         await client.GET("/api/notifications", {
           params: {
-            query: { page, pageSize: 20, ...(unreadOnly ? { unreadOnly } : {}) },
+            query: {
+              page,
+              pageSize: 20,
+              ...(unreadOnly ? { unreadOnly } : {}),
+            },
           },
         }),
       );
@@ -958,7 +1002,11 @@ export function createApi(baseUrl = "") {
         }),
       );
     },
-    sendMessage(id: string, body: components["schemas"]["MessageCreate"], key: string) {
+    sendMessage(
+      id: string,
+      body: components["schemas"]["MessageCreate"],
+      key: string,
+    ) {
       return mutate(async (headers) =>
         result(
           await client.POST("/api/conversations/{id}/messages", {

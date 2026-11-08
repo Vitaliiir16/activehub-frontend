@@ -1,53 +1,44 @@
 # ActiveHub frontend
 
-The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. The authenticated catalog, organizer event/session/photo forms, user bookings/list/calendar, organizer decisions, simulated payment and refunded receipts use the real backend. Subscriptions, the member loyalty card, the administrator loyalty settings, notifications and user-organizer chat use the real backend. Administration screens use the real backend as well. Reporting screens remain planned.
+The React/TypeScript interface for the ActiveHub sports marketplace. Members discover activities, book, use subscriptions and loyalty, pay through a simulator and message organizers. Organizers manage activities, sessions, requests and plans. Administrators manage the platform and review statistics.
+
+The application uses React 19, TypeScript, Vite and a typed REST client. The backend is a separate Next.js/TypeScript repository with PostgreSQL. English UI, UAH and Europe/Kyiv apply throughout.
 
 ## Start
 
-Clone [activehub-backend](https://github.com/Vitaliiir16/activehub-backend) beside this repository. With Node 24 and Docker's Linux engine running, execute from the backend directory:
+Keep activehub-backend and activehub-frontend beside each other. From the backend directory:
 
 ~~~powershell
 node scripts/create-local-env.mjs
 docker compose up --build --wait
 ~~~
 
-Generate the environment only once. Open http://localhost:8080. The backend owns Compose, migrations/seeds, PostgreSQL, worker, Mailpit and shared image storage. nginx proxies /api to the real backend using the same origin. Seeded administrator credentials remain in the private backend .env; there are no hardcoded demo credentials.
+The environment generator preserves an existing .env. Open http://localhost:8080; Mailpit is http://localhost:8025. Backend Compose owns migrations, required seeds, optional demo data and shared uploads. nginx proxies /api to the real backend.
 
-For Vite development, run npm.cmd ci and npm.cmd run dev, then open http://localhost:5173. API_PROXY_TARGET defaults to http://127.0.0.1:3000. Configure the backend APP_ORIGINS with the exact Vite origin. Browser environment values are public; never put secrets in them.
+For demo sign-in, enable SEED_DEMO in the backend .env and use its private DEMO_PASSWORD. The default namespace creates member1 through member4, trainer, club, venue and organizer at @demo.activehub.example.test; the initial administrator uses its separately configured credentials. Full setup, SMTP options and non-destructive reseeding are in the [backend README](https://github.com/Vitaliiir16/activehub-backend#readme).
 
-## Checks
+For local Vite development:
 
 ~~~powershell
 npm.cmd ci
+npm.cmd run dev
+~~~
+
+Open http://localhost:5173. API_PROXY_TARGET defaults to http://127.0.0.1:3000; the backend must allow the exact Vite origin. Browser configuration is public and must contain no secrets.
+
+## Checks and compatibility
+
+~~~powershell
 npm.cmd run lint
 npm.cmd run typecheck
 npm.cmd run api:check
 npm.cmd run build
-npm.cmd run test:health
-npx.cmd playwright install chromium
-npm.cmd run test:e2e
 ~~~
 
-Health/E2E require the running Compose stack. The E2E runner privately loads only the required administrator credentials and local ports from ../activehub-backend/.env. For an isolated configuration, set ACTIVEHUB_E2E_ENV_FILE to its filename; FRONTEND_BASE_URL and MAILPIT_BASE_URL can override test URLs. No credentials are printed. Eight desktop/mobile Chromium tests exercise actual API/PostgreSQL and Mailpit, including both signup roles, profile/email/photo/preferences, reload, password change, logout/login and seeded/new ADMIN. No backend mocks are used. The backend manual review guide describes the separate test environment.
+test:health reaches actual PostgreSQL through the proxy. test:e2e runs Playwright against a running real stack. ACTIVEHUB_E2E_ENV_FILE selects a private isolated backend environment; credentials are redacted. Existing CI remains enabled. Use one relevant scenario when changing a screen rather than repeating the full suite on every edit.
 
-GitHub Actions runs static/generated-type checks, checks out the exact backend commit in contracts/backend.json, compares the OpenAPI snapshot byte-for-byte, starts Compose and runs the browser suite. Cross-repository checkout currently relies on public backend visibility.
+[BACKEND_CONTRACT.md](docs/BACKEND_CONTRACT.md) records compatibility. contracts/backend.json pins the exact backend revision and schema hash; src/api/schema.d.ts is generated from those bytes. Cookies hold the session, unsafe calls fetch CSRF tokens and run serially, and the server checks role, state and owner. No credentials or card input are stored in localStorage.
 
-## API and sessions
+The organizer dashboard shows real counters, pending decisions, upcoming availability and activity cards. Event management has Overview, Sessions, Bookings, Edit, Photos and Status views. Booking confirmation shows the current server-calculated breakdown before reserving, then displays the immutable result. Previewing never reserves capacity or benefits.
 
-[BACKEND_CONTRACT.md](docs/BACKEND_CONTRACT.md) records the pinned contract and compatibility evidence. API calls include cookies. Unsafe calls fetch a bound CSRF token and run serially; session expiration returns the interface to sign-in. Credentials are never stored in localStorage. Server checks remain authoritative for roles, ownership, dictionaries, passwords and images.
-
-## Design patterns
-
-No GoF pattern is claimed in this frontend. Backend SeatPolicy Strategy and SMTP/card Adapters are indexed with symbols and search commands in its README. Future frontend patterns will be listed with actual symbols, purpose and search commands when justified.
-
-The marketplace browser scenario runs once on desktop Chromium against real PostgreSQL/API; it creates an activity, reserves, pays, reloads and cancels to a refunded receipt. It supplements the existing account checks. It does not claim broad calendar/filter/visual coverage. See the backend [manual review](https://github.com/Vitaliiir16/activehub-backend/blob/feature/05-07-marketplace/docs/MARKETPLACE_REVIEW.md). Card credentials remain in the current form/request only, never browser storage. Money displays as UAH; dates use Europe/Kyiv.
-
-Stage 08 adds organizer Plans, subscription purchase, My subscriptions and eligible subscription selection when booking. Purchased terms remain unchanged after plan edits/archive. Corporate loyalty is deferred to stage 09. New subscription browser forms were not E2E-tested in this reduced run.
-
-Stage 09 adds the Loyalty page (card, benefits, balance, Premium progress, monthly free visits and points history) and administrator Loyalty settings (levels, rules, card assignment/lock and points adjustment). Prices, free visits, discounts and awards come from the server; the booking form shows only an estimate before card benefits. A desktop browser test covers earning points and the administrator card and points forms.
-
-Stage 10 adds Messages (conversation list and thread) and header unread badges for notifications and messages. Both update by polling, without reloading the page, and pause while the tab is hidden. Notifications link to their subject, can be filtered to unread and show whether they were also emailed. Emails are sent by the backend worker: by default into Mailpit at http://localhost:8025, or through a real provider such as Gmail when the backend `.env` is configured (see the backend README, Email). A desktop browser test covers live chat and unread badges.
-
-Stage 11 adds the Administration area for administrators: Users, Organizers, Events, Bookings, Subscriptions, Dictionaries, Loyalty settings and Administrator access. Lists filter through the address and paginate; block, unblock, cancel and delete ask for a reason, and the server applies the cascades and refunds. A desktop browser test covers the main flows; the statistics dashboard is planned for a later stage.
-
-Stage 12 adds the administrator Statistics screen (period filters, totals, charts and data tables) and the organizer dashboard. Charts show values on hover and offer a data table; the figures come from the backend and are defined in the backend assumptions (Stage 12).
+No GoF pattern is claimed in this frontend. The backend indexes its SeatPolicy Strategy, pricing chain and payment/SMTP Adapters with actual symbols and search commands. The [acceptance guide](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/FINAL_ACCEPTANCE.md) contains the teacher demonstration and verification limits. Optional stage 14 screens are not advertised as working features.

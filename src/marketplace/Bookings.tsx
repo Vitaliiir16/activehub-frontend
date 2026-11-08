@@ -17,6 +17,7 @@ import {
   useRemote,
 } from "./shared";
 
+import { subscriptionCovers } from "./Subscriptions";
 import { PaymentForm, Receipts } from "./Payments";
 export function BookingForm() {
   const [params] = useSearchParams(),
@@ -39,7 +40,16 @@ export function BookingForm() {
     }, [id, sessionId]),
   );
   const data = remote.data;
-  const [seats, setSeats] = useState(1);
+  const [seats, setSeats] = useState(1),
+    [subscriptionId, setSubscription] = useState("");
+  const subscriptions = useRemote(
+    useCallback(() => api.activeSubscriptions(), []),
+  );
+  const eligible = data
+    ? (subscriptions.data?.filter((s) =>
+        subscriptionCovers(s, data.event, data.session.startsAt, seats),
+      ) ?? [])
+    : [];
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
@@ -48,7 +58,8 @@ export function BookingForm() {
         sessionId,
         seats,
         comment: text(form, "comment"),
-        paymentMethod: "CARD",
+        paymentMethod: subscriptionId ? "SUBSCRIPTION" : "CARD",
+        ...(subscriptionId ? { subscriptionId } : {}),
       });
       navigate(`/bookings/${b.id}`);
     });
@@ -81,7 +92,10 @@ export function BookingForm() {
                   : Math.min(10, data.session.seatsAvailable)
               }
               value={seats}
-              onChange={(e) => setSeats(Number(e.target.value))}
+              onChange={(e) => {
+                setSeats(Number(e.target.value));
+                setSubscription("");
+              }}
             />
           </label>
           <label>
@@ -89,18 +103,41 @@ export function BookingForm() {
             <textarea name="comment" maxLength={300} />
           </label>
           <p className="price">
-            Estimated total: {money(data.event.effectivePriceMinor * seats)}
+            Estimated total:{" "}
+            {money(subscriptionId ? 0 : data.event.effectivePriceMinor * seats)}
           </p>
           <p>
             The server fixes the final price when reserving your places.{" "}
-            {data.event.confirmationMode === "MANUAL"
-              ? "The organizer must approve before payment."
-              : data.event.effectivePriceMinor === 0
-                ? "No payment is required."
-                : "Pay after your places are reserved."}
+            {subscriptionId
+              ? "Covered by your subscription; organizer approval may still be required."
+              : data.event.confirmationMode === "MANUAL"
+                ? "The organizer must approve before payment."
+                : data.event.effectivePriceMinor === 0
+                  ? "No payment is required."
+                  : "Pay after your places are reserved."}
           </p>
+          <label>
+            Payment method
+            <select
+              aria-label="Payment method"
+              value={subscriptionId}
+              onChange={(e) => setSubscription(e.target.value)}
+            >
+              <option value="">Card / free booking</option>
+              {eligible.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.plan.name} -{" "}
+                  {s.visitsLeft === null
+                    ? "unlimited"
+                    : s.visitsLeft + " visits left"}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Feedback state={subscriptions.state} />
           <p className="hint">
-            Subscription and loyalty benefits are not available in this release.
+            Only subscriptions covering this session and number of places are
+            offered. Loyalty benefits arrive in stage 09.
           </p>
           <Feedback state={state} />
           <button disabled={state.busy || !seats}>Reserve places</button>
@@ -404,6 +441,12 @@ export function BookingDetails({ owned = false }: { owned?: boolean }) {
                 </p>
               ))}
               <p className="price">Total: {money(b.amountDueMinor)}</p>
+              {b.paymentMethod === "SUBSCRIPTION" && (
+                <p>
+                  Covered by subscription. Reserved visits: {b.seats}. Visits
+                  return once if rejected, cancelled or expired.
+                </p>
+              )}
               {b.paymentMethod === "FREE" && <p>No payment required.</p>}
               {b.cancelReason && <p>Reason: {b.cancelReason}</p>}
             </section>

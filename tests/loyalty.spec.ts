@@ -93,8 +93,8 @@ test("member earns points and an administrator assigns a locked card and adjusts
     await user.goto(`/events/${event.id}`);
     await user.getByRole("link", { name: "Book session" }).click();
     await expect(
-      user.getByText("Estimated total before card benefits", { exact: false }),
-    ).toBeVisible();
+      user.getByRole("region", { name: "Current price breakdown" }),
+    ).toContainText("100.00");
     await user
       .getByRole("button", { name: "Reserve places", exact: true })
       .click();
@@ -140,7 +140,9 @@ test("member earns points and an administrator assigns a locked card and adjusts
     await expect(
       admin.getByRole("heading", { name: "Loyalty settings" }),
     ).toBeVisible();
-    await expect(admin.getByRole("form", { name: "PREMIUM level" })).toBeVisible();
+    await expect(
+      admin.getByRole("form", { name: "PREMIUM level" }),
+    ).toBeVisible();
     const assign = admin.getByRole("form", { name: "Assign card" });
     await assign.getByLabel("User account ID").fill(memberId);
     await assign.getByLabel("Card level").selectOption("PREMIUM");

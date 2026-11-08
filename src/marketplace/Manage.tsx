@@ -117,7 +117,7 @@ export function EventForm({
   return (
     <form className="panel" onSubmit={submit}>
       <h2>{event ? "Edit event" : "Create an event"}</h2>
-      <Feedback state={state} />
+      <Feedback state={state} includeFieldErrors />
       <Feedback state={dict.state} />
       <div className="filter-grid">
         <label>
@@ -327,7 +327,7 @@ function SessionEditor({
       }}
     >
       <SessionFields session={session} />
-      <Feedback state={state} />
+      <Feedback state={state} includeFieldErrors />
       <button disabled={state.busy}>Save session</button>
     </form>
   );
@@ -390,7 +390,7 @@ export function EventManager() {
               </button>
             ))}
           </div>
-          <Feedback state={state} />
+          <Feedback state={state} includeFieldErrors />
           {tab === "overview" && (
             <section className="panel">
               <h2>Overview</h2>

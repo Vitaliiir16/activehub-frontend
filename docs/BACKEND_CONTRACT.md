@@ -17,6 +17,19 @@ The original specification is archived unchanged locally at sibling `../activehu
 
 The future canonical OpenAPI file is `activehub-backend/docs/openapi.yaml` (planned; currently absent). Once published its URL will be `https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/openapi.yaml`. The development contract must be pinned to a commit, not just that moving URL. Do not invent routes or types from the feature list.
 
+## Published documentation baseline
+
+Both initial documentation commits were published on `main` on 2026-11-08. Remote heads were checked after push:
+
+| Repository | Published revision | Scope |
+|---|---|---|
+| Backend | [492eff2f77f974b97573591251054b6df5f209de](https://github.com/Vitaliiir16/activehub-backend/commit/492eff2f77f974b97573591251054b6df5f209de) | Product requirements, planning, architecture and verification baseline |
+| Frontend | [89201bc3855288a19aeaf8f03b5f51a8a26c7f96](https://github.com/Vitaliiir16/activehub-frontend/commit/89201bc3855288a19aeaf8f03b5f51a8a26c7f96) | Frontend README, ignore rules and integration guide |
+
+Use the [pinned requirements](https://github.com/Vitaliiir16/activehub-backend/blob/492eff2f77f974b97573591251054b6df5f209de/docs/REQUIREMENTS.md), [pinned verification matrix](https://github.com/Vitaliiir16/activehub-backend/blob/492eff2f77f974b97573591251054b6df5f209de/docs/REQUIREMENTS_MATRIX.md) and [pinned architecture proposal](https://github.com/Vitaliiir16/activehub-backend/blob/492eff2f77f974b97573591251054b6df5f209de/docs/ARCHITECTURE.md) to reproduce this planning snapshot. The moving links above are for current project navigation. This is a documentation pair, not a tested application pair.
+
+Preparation checks passed for English authored files, relative document references, whitespace, published-file scope and source archive integrity. No application tests, API generation, build or CI run occurred. The follow-up publication record is reviewed on `setup/documentation-handoff`; related backend progress is on the identically named backend branch. Final branch hashes are recorded in the delivery handoff because this document cannot contain its own final commit hash.
+
 ## Synchronization order
 
 1. Review backend contract changes, acceptance examples and changelog before consuming them.

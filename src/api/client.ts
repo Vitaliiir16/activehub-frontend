@@ -10,6 +10,8 @@ export type OrganizerRegistration =
   components["schemas"]["OrganizerRegistration"];
 export type ProfilePatch = components["schemas"]["ProfilePatch"];
 export type Notice = components["schemas"]["Notification"];
+export type Booking = components["schemas"]["Booking"];
+export type OrganizerBooking = components["schemas"]["OrganizerBooking"];
 export type Event = components["schemas"]["Event"];
 export type EventSession = components["schemas"]["EventSession"];
 export type Organizer = components["schemas"]["OrganizerPublic"];
@@ -73,6 +75,13 @@ export function createApi(baseUrl = "") {
     return task;
   }
   return {
+    async bookings(query:paths["/api/bookings"]["get"]["parameters"]["query"]={}){const r=result(await client.GET("/api/bookings",{params:{query}}));return {...r,items:r.items as Booking[]};},
+    async organizerBookings(query:paths["/api/organizer/bookings"]["get"]["parameters"]["query"]={}){const r=result(await client.GET("/api/organizer/bookings",{params:{query}}));return {...r,items:r.items as OrganizerBooking[]};},
+    async booking(id:string){return result(await client.GET("/api/bookings/{id}",{params:{path:{id}}})) as Booking;},
+    async organizerBooking(id:string){return result(await client.GET("/api/organizer/bookings/{id}",{params:{path:{id}}})) as OrganizerBooking;},
+    createBooking(body:components["schemas"]["BookingCreate"],key=crypto.randomUUID()){return mutate(async headers=>result(await client.POST("/api/bookings",{headers,params:{header:{"Idempotency-Key":key}},body})));},
+    cancelBooking(id:string,reason:string,owned=false,key=crypto.randomUUID()){return mutate(async headers=>owned?result(await client.POST("/api/organizer/bookings/{id}/cancel",{headers,params:{path:{id},header:{"Idempotency-Key":key}},body:{reason}})):result(await client.POST("/api/bookings/{id}/cancel",{headers,params:{path:{id},header:{"Idempotency-Key":key}},body:{reason}})));},
+    decideBooking(id:string,decision:"APPROVE"|"REJECT",reason?:string,key=crypto.randomUUID()){return mutate(async headers=>result(await client.POST("/api/organizer/bookings/{id}/decision",{headers,params:{path:{id},header:{"Idempotency-Key":key}},body:{decision,reason}})));},
     async events(query:paths["/api/events"]["get"]["parameters"]["query"]={},owned=false){return owned?result(await client.GET("/api/organizer/events",{params:{query}})):result(await client.GET("/api/events",{params:{query}}));},
     async event(id:string,owned=false){return owned?result(await client.GET("/api/organizer/events/{id}",{params:{path:{id}}})):result(await client.GET("/api/events/{id}",{params:{path:{id}}}));},
     async organizers(query:paths["/api/organizers"]["get"]["parameters"]["query"]={}){return result(await client.GET("/api/organizers",{params:{query}}));},

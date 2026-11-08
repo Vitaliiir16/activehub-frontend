@@ -1424,6 +1424,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/event-photos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getEventPhoto"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizers/{id}/logo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getOrganizerLogo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1597,6 +1629,7 @@ export interface components {
             nextSession: components["schemas"]["EventSession"] | null;
             isFull: boolean;
             isCompleted: boolean;
+            trainerName?: string;
         };
         EventCreate: {
             title: string;
@@ -1613,6 +1646,7 @@ export interface components {
             seatsPerSession: number;
             confirmationMode?: "AUTO" | "MANUAL";
             sessions: components["schemas"]["SessionWrite"][];
+            trainerName?: string;
         };
         EventPatch: {
             title?: string;
@@ -1627,6 +1661,7 @@ export interface components {
             promoUntil?: string | null;
             seatsPerSession?: number;
             confirmationMode?: "AUTO" | "MANUAL";
+            trainerName?: string;
         };
         PhotoOrder: {
             photoIds: string[];
@@ -1649,9 +1684,7 @@ export interface components {
             sessionId: string;
             seats: number;
             comment?: string;
-            paymentMethod: "CARD" | "SUBSCRIPTION";
-            subscriptionId?: string;
-            pointsToRedeem?: number;
+            paymentMethod: "CARD";
         };
         Discount: {
             type: "PROMOTION" | "FREE_ACCESS" | "CARD_DISCOUNT" | "POINTS";
@@ -1675,13 +1708,18 @@ export interface components {
             discountBreakdown: components["schemas"]["Discount"][];
             amountDueMinor: number;
             paymentMethod: "CARD" | "SUBSCRIPTION" | "FREE";
-            subscriptionUsedId: string | null;
-            pointsRedeemed: number;
+            subscriptionUsedId: null;
+            pointsRedeemed: 0;
             deadlineAt: string | null;
             cancelledBy: ("USER" | "ORGANIZER" | "ADMIN" | "SYSTEM") | null;
             cancelReason: string | null;
             timeline: components["schemas"]["BookingTransition"][];
             payments: components["schemas"]["Payment"][];
+            eventId: string;
+            address: string;
+            canCancel: boolean;
+            canPay: boolean;
+            changeRefundEligible: boolean;
         };
         BookingTransition: {
             from: ("PENDING" | "AWAITING_PAYMENT" | "CONFIRMED" | "REJECTED" | "CANCELLED" | "EXPIRED" | "COMPLETED") | null;
@@ -1720,6 +1758,7 @@ export interface components {
             currency: "UAH";
             status: "SUCCEEDED" | "FAILED" | "REFUNDED";
             cardLast4: string;
+            refundedAt?: string | null;
         };
         PlanWrite: {
             name: string;
@@ -2606,6 +2645,7 @@ export interface operations {
                 availableOnly?: boolean;
                 freeOnly?: boolean;
                 sort?: "nearest" | "priceAsc" | "priceDesc" | "newest";
+                trainerName?: string;
             };
             header?: never;
             path?: never;
@@ -2915,6 +2955,7 @@ export interface operations {
                 freeOnly?: boolean;
                 sort?: "nearest" | "priceAsc" | "priceDesc" | "newest";
                 status?: "ACTIVE" | "PAUSED" | "CANCELLED" | "BLOCKED" | "DELETED";
+                trainerName?: string;
             };
             header?: never;
             path?: never;
@@ -2970,6 +3011,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3034,6 +3076,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3068,6 +3111,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3102,6 +3146,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3138,6 +3183,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3174,6 +3220,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3202,6 +3249,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3236,6 +3284,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3272,6 +3321,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3344,6 +3394,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3378,6 +3429,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3406,6 +3458,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3423,6 +3476,7 @@ export interface operations {
                 eventName?: string;
                 eventId?: string;
                 sort?: "startsAtAsc" | "startsAtDesc" | "newest";
+                tab?: "upcoming" | "past" | "cancelled";
             };
             header?: never;
             path?: never;
@@ -3478,6 +3532,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3544,6 +3599,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3580,6 +3636,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3598,6 +3655,7 @@ export interface operations {
                 eventId?: string;
                 sort?: "startsAtAsc" | "startsAtDesc" | "newest";
                 userName?: string;
+                tab?: "upcoming" | "past" | "cancelled";
             };
             header?: never;
             path?: never;
@@ -3685,6 +3743,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -3721,6 +3780,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -4866,6 +4926,7 @@ export interface operations {
                 freeOnly?: boolean;
                 sort?: "nearest" | "priceAsc" | "priceDesc" | "newest";
                 status?: "ACTIVE" | "PAUSED" | "CANCELLED" | "BLOCKED" | "DELETED";
+                trainerName?: string;
             };
             header?: never;
             path?: never;
@@ -4951,6 +5012,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -4985,6 +5047,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5019,6 +5082,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5055,6 +5119,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5089,6 +5154,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5117,6 +5183,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5223,6 +5290,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5750,6 +5818,54 @@ export interface operations {
         };
     };
     getProfilePhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": string;
+                };
+            };
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+        };
+    };
+    getEventPhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": string;
+                };
+            };
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+        };
+    };
+    getOrganizerLogo: {
         parameters: {
             query?: never;
             header?: never;

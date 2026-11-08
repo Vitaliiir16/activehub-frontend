@@ -72,7 +72,7 @@ for (const role of ["USER", "ORGANIZER"] as const) {
     await expect(page).toHaveURL(
       role === "USER" ? /\/events$/ : /\/organizer$/,
     );
-    await expect(page.getByRole("status")).toHaveText("Connected to ActiveHub");
+    await expect(page.locator(".connection[role=status]")).toHaveText("Connected to ActiveHub");
     await page.screenshot({
       path: info.outputPath(`${role.toLowerCase()}-home.png`),
       fullPage: true,

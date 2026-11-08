@@ -1,31 +1,45 @@
 # ActiveHub frontend
 
-The web interface for ActiveHub, a marketplace for sports sessions, venue bookings and activities. It will provide separate areas for users, organizers and administrators.
+The React and TypeScript interface for ActiveHub. The Vite scaffold displays an English welcome screen and checks its connection through a typed API client. Authentication, catalogs, booking and role-specific tools are planned.
 
-This repository currently contains preparation documents only. There is no runnable application or API client yet.
+## Run locally
 
-## Stack and setup plan
-
-The frontend will be a separate React and TypeScript application using the Next.js REST backend. Vite is the proposed build tool. The interface will be in English, with prices in UAH and dates displayed in Europe/Kyiv.
-
-Clone this repository beside [activehub-backend](https://github.com/Vitaliiir16/activehub-backend), keeping both directory names. After infrastructure is implemented, the target full-stack command from the backend directory will be:
+Clone [activehub-backend](https://github.com/Vitaliiir16/activehub-backend) beside this directory, keeping both repository names. With Node 24 and Docker's Linux engine available, run from `activehub-backend`:
 
 ```powershell
-docker compose up --build
+node scripts/create-local-env.mjs
+docker compose up --build --wait
 ```
 
-Compose, package scripts, ports and environment examples do not exist yet. They will be documented alongside the scaffold and infrastructure. Use `npm.cmd` and `npx.cmd` in PowerShell. Never place secrets in frontend environment variables: values shipped to the browser are public.
+Environment generation is needed once and never overwrites existing configuration. Open <http://localhost:8080>. The backend owns Compose and starts PostgreSQL, required seeds, API, worker, frontend and Mailpit. nginx proxies `/api` to the real backend using the same browser origin. `/uploads` is reserved for future authenticated file handling; no serving endpoint exists yet.
 
-## Development
+For Vite development, keep the API running and use:
 
-The [backend contract guide](docs/BACKEND_CONTRACT.md) links the product requirements, delivery plan and future OpenAPI location. Backend contract changes come first, followed by backend behavior, then the typed client and interface. Each integration will record the backend commit it uses and the frontend revision tested with it.
+```powershell
+npm.cmd ci
+npm.cmd run dev
+```
 
-The planned interface includes authentication, event and organizer catalogs, booking history with a calendar, payments, subscriptions, loyalty, chat, notifications, organizer tools and administration. Loading, empty and error states and phone/desktop layouts are part of the required scope.
+Open <http://localhost:5173>. The proxy defaults to `http://127.0.0.1:3000`; set `API_PROXY_TARGET` in a local `.env` for another port. Never put secrets in browser environment variables.
+
+## Checks
+
+```powershell
+npm.cmd run lint
+npm.cmd run typecheck
+npm.cmd run api:check
+npm.cmd run build
+npm.cmd run test:health
+npx.cmd playwright install chromium
+npm.cmd run test:e2e
+```
+
+Health and browser checks require the running Compose stack; `FRONTEND_BASE_URL` overrides `http://127.0.0.1:8080`. Desktop and mobile browser tests use the real backend and PostgreSQL. GitHub Actions runs the checks with the exact backend revision in `contracts/backend.json`. PowerShell uses `npm.cmd` and `npx.cmd`; other shells use `npm` and `npx`. Lockfiles pin dependencies, including targeted lint dependency overrides for the minimatch advisory. Product behavior remains unimplemented.
+
+## Contract and development
+
+[BACKEND_CONTRACT.md](docs/BACKEND_CONTRACT.md) links canonical requirements and records synchronization. Contract changes come first, followed by backend behavior, the typed client and paired checks. New UI, code, messages and documentation use English. Future prices use UAH and dates display in Europe/Kyiv.
 
 ## Design patterns
 
-No design patterns have been implemented yet. Proposed backend patterns are documented in the [architecture proposal](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/ARCHITECTURE.md). If a pattern is justified in this application, this section will name it, explain its purpose and link its actual source symbols with a search command. Code comments will be concise and in English.
-
-## Checks and review
-
-Current validation covers documentation and repository hygiene. Type checking, lint, builds, focused component tests and full-stack end-to-end tests will be added with the application. Feature branches and small meaningful commits are required after the initial documentation baseline. Pull requests should state the behavior changed, requirements covered, checks actually run and the compatible backend revision. Merging remains with the repository owner.
+No GoF pattern is implemented in this frontend. When a pattern is justified, this index will name its purpose, real source symbols and a search command. Comments stay concise and in English.

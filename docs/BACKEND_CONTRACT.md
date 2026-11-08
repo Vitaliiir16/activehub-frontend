@@ -1,56 +1,25 @@
-# Backend integration contract
+# Backend contract
 
-Status on 2026-11-08: integration is planned. No API specification, endpoints, schemas or typed client exist. Documentation revision links below are not proof of application compatibility.
+The canonical English requirements live in [backend/docs/REQUIREMENTS.md](https://github.com/Vitaliiir16/activehub-backend/blob/c40e993b87a8602e4378cd0ebbf06766eeb5421f/docs/REQUIREMENTS.md). The backend owns [OpenAPI](https://github.com/Vitaliiir16/activehub-backend/blob/c40e993b87a8602e4378cd0ebbf06766eeb5421f/docs/openapi.yaml) and [API conventions](https://github.com/Vitaliiir16/activehub-backend/blob/c40e993b87a8602e4378cd0ebbf06766eeb5421f/docs/API_CONVENTIONS.md).
 
-## Sources
+## Pinned snapshot
 
-Backend repository: [Vitaliiir16/activehub-backend](https://github.com/Vitaliiir16/activehub-backend).
+Contract source: backend commit `c40e993b87a8602e4378cd0ebbf06766eeb5421f`, API version 0.1.0. [backend.json](../contracts/backend.json) records this full SHA and the SHA-256 of [backend.openapi.yaml](../contracts/backend.openapi.yaml). The snapshot is a consumer copy; edit the backend source first.
 
-- [Published requirements baseline](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/REQUIREMENTS.md)
-- [Requirement and verification matrix](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/REQUIREMENTS_MATRIX.md)
-- [Delivery plan](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/DELIVERY_PLAN.md)
-- [Open decisions](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/ASSUMPTIONS.md)
-- [API change history](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/API_CHANGELOG.md)
-- [Progress and paired revision record](https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/PROGRESS.md)
+`src/api/schema.d.ts` is generated using openapi-typescript. Run `npm.cmd run api:generate` after copying a reviewed backend contract and updating the manifest. `npm.cmd run api:check` verifies its hash and rejects stale generated types. CI checks out that exact backend commit and compares the canonical file byte-for-byte before running the real stack.
 
-The original specification is archived unchanged locally at sibling `../activehub-backend/docs/project.md`. It is not published. The English baseline records the owner's language override and retains the original section references.
+## What works
 
-The future canonical OpenAPI file is `activehub-backend/docs/openapi.yaml` (planned; currently absent). Once published its URL will be `https://github.com/Vitaliiir16/activehub-backend/blob/main/docs/openapi.yaml`. The development contract must be pinned to a commit, not just that moving URL. Do not invent routes or types from the feature list.
+The typed client in `src/api/client.ts` exposes only the implemented `GET /api/health`. It sends credentials on same-origin requests and maps documented errors to ApiError. The welcome screen performs a real request, displays loading/success/failure in English, and offers retry. nginx and Vite proxy API requests; there are no backend mocks.
 
-## Published documentation baseline
+OpenAPI describes 109 operations. The remaining 108 are planned, including login/session/CSRF, catalog and every business operation. Generated types for planned operations do not make those operations available. The client deliberately exposes no business methods yet. No authentication or CSRF enforcement is claimed in this delivery.
 
-Both initial documentation commits were published on `main` on 2026-11-08. Remote heads were checked after push:
+Money is integer UAH minor units, instants are UTC RFC 3339, and the UI will format dates in Europe/Kyiv. Page size defaults to 20; filters and sorting belong in URLs. Planned cookie and CSRF handling, access control and idempotency are defined by the linked backend conventions.
 
-| Repository | Published revision | Scope |
-|---|---|---|
-| Backend | [492eff2f77f974b97573591251054b6df5f209de](https://github.com/Vitaliiir16/activehub-backend/commit/492eff2f77f974b97573591251054b6df5f209de) | Product requirements, planning, architecture and verification baseline |
-| Frontend | [89201bc3855288a19aeaf8f03b5f51a8a26c7f96](https://github.com/Vitaliiir16/activehub-frontend/commit/89201bc3855288a19aeaf8f03b5f51a8a26c7f96) | Frontend README, ignore rules and integration guide |
+## Verified scope
 
-Use the [pinned requirements](https://github.com/Vitaliiir16/activehub-backend/blob/492eff2f77f974b97573591251054b6df5f209de/docs/REQUIREMENTS.md), [pinned verification matrix](https://github.com/Vitaliiir16/activehub-backend/blob/492eff2f77f974b97573591251054b6df5f209de/docs/REQUIREMENTS_MATRIX.md) and [pinned architecture proposal](https://github.com/Vitaliiir16/activehub-backend/blob/492eff2f77f974b97573591251054b6df5f209de/docs/ARCHITECTURE.md) to reproduce this planning snapshot. The moving links above are for current project navigation. This is a documentation pair, not a tested application pair.
+`npm.cmd run test:health` calls the typed client through a running frontend proxy and checks the actual API/database response. `npm.cmd run test:e2e` runs Chromium desktop and mobile checks against that same running stack. Set `FRONTEND_BASE_URL` to change the default `http://127.0.0.1:8080`. Install Chromium once with `npx.cmd playwright install chromium`.
 
-Preparation checks passed for English authored files, relative document references, whitespace, published-file scope and source archive integrity. No application tests, API generation, build or CI run occurred. The follow-up publication record is reviewed on `setup/documentation-handoff`; related backend progress is on the identically named backend branch. Final branch hashes are recorded in the delivery handoff because this document cannot contain its own final commit hash.
+Both browser tests passed locally on the Docker stack, including English text, connected status, no horizontal overflow and no page errors. Screenshots were reviewed at both sizes. This covers the foundation only, not business integration. The final tested backend/frontend pair belongs in backend PROGRESS.md and the paired PR descriptions.
 
-## Synchronization order
-
-1. Review backend contract changes, acceptance examples and changelog before consuming them.
-2. Backend implements and verifies the agreed contract with PostgreSQL integration checks.
-3. Pin the backend commit and contract hash, then generate or update the typed frontend client and related screens. Backend retains authority over pricing, eligibility, lifecycle, ownership and validation.
-4. Run both check suites and integrated E2E at exact revisions. Cross-link both PRs and record the tested pair here and in backend progress.
-5. Expand backend compatibility before changing consumers; retire older behavior only in a later coordinated review. Merging is reserved to the owner.
-
-## Contract topics to define
-
-Authentication/session cookies, CSRF and same-origin proxy behavior; role/ownership errors; English field messages and error format; money/timestamp representation; filters/pagination/sorting; file uploads; booking/payment idempotency; status/deadline semantics; chat and notification updates. These are pending design decisions rather than agreed transport formats.
-
-Interface text is English by explicit owner direction, overriding the source's Ukrainian-language UI requirement. UAH and Europe/Kyiv remain fixed. Never ship secrets in browser environment values or persist full card numbers/CVV. Avoid mock-only acceptance: integration uses the real backend and PostgreSQL.
-
-## Compatibility record
-
-| Item | Current value |
-|---|---|
-| Backend implementation revision | None; no implementation exists |
-| OpenAPI revision and SHA-256 | None; file not yet defined |
-| Frontend client revision | None; no client exists |
-| Paired application checks | Not run; no applications or scripts exist |
-
-When populated, each entry must include both commit SHAs, scope/date, actual commands and outcomes. A documentation baseline cannot be relabeled as a tested application pair.
+Q-01 through Q-05 remain open and are not approved by this contract. Stop after stage 03; authentication and other product modules require the next authorized stage.

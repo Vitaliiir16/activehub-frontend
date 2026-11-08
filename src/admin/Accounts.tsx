@@ -5,6 +5,7 @@ import type { paths } from "../api/schema";
 import { Feedback, Field, useFormState } from "../components/forms";
 import { dateTime, label, Pagination, useRemote } from "../marketplace/shared";
 import { AdminNav, DataTable, ReasonAction, StatusBadge, field, filterParams, queryOf, shortId } from "./shared";
+import { DashboardView } from "./Statistics";
 
 type Dictionary = { id: string; name: string; isActive: boolean };
 const useCities = () => useRemote(useCallback(() => api.adminDictionary("cities", { pageSize: 100 }), []));
@@ -446,6 +447,7 @@ export function AdminOrganizerPage() {
     cities = useCities(),
     directions = useRemote(useCallback(() => api.adminDictionary("directions", { pageSize: 100 }), [])),
     remote = useRemote(useCallback(() => api.adminOrganizer(id), [id])),
+    figures = useRemote(useCallback(() => api.adminOrganizerStatistics(id), [id])),
     edit = useFormState();
   const data = remote.data,
     profile = data?.profile;
@@ -529,6 +531,15 @@ export function AdminOrganizerPage() {
               }}
             />
           </div>
+          <section className="section-space">
+            <h2>Figures</h2>
+            <Feedback state={figures.state} />
+            {figures.data ? (
+              <DashboardView data={figures.data} title="Organizer figures" />
+            ) : (
+              !figures.state.message && <p role="status">Loading figures...</p>
+            )}
+          </section>
           {data.account.status !== "DELETED" && (
             <form className="panel section-space" onSubmit={save} key={profile.updatedAt} aria-label="Edit organizer">
               <h2>Edit organizer</h2>

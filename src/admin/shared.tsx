@@ -4,6 +4,7 @@ import { Feedback, useFormState } from "../components/forms";
 import { label } from "../marketplace/shared";
 
 export const adminSections = [
+  ["/admin/statistics", "Statistics", "Period totals, charts and breakdowns"],
   ["/admin/users", "Users", "Search, edit, block and remove member accounts"],
   ["/admin/organizers", "Organizers", "Review, edit, block and remove organizers"],
   ["/admin/events", "Events", "Moderate every organizer's activities"],

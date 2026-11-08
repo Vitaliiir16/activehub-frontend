@@ -1,0 +1,57 @@
+name: Frontend checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: frontend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: activehub-frontend
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          path: activehub-frontend
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: activehub-frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: activehub-frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run api:check
+      - run: npm run build
+      - id: contract
+        run: node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync('contracts/backend.json')); if(!/^[0-9a-f]{40}$/.test(m.commit)) throw Error('Invalid backend revision'); fs.appendFileSync(process.env.GITHUB_OUTPUT, 'sha='+m.commit+'\n')"
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: Vitaliiir16/activehub-backend
+          ref: ${{ steps.contract.outputs.sha }}
+          path: activehub-backend
+          persist-credentials: false
+      - name: Verify canonical snapshot
+        run: node -e "const fs=require('fs'); const a=fs.readFileSync('contracts/backend.openapi.yaml'); const b=fs.readFileSync('../activehub-backend/docs/openapi.yaml'); if(!a.equals(b)) throw Error('Backend contract snapshot differs')"
+      - name: Configure isolated stack
+        id: configure
+        working-directory: activehub-backend
+        env:
+          COMPOSE_PROJECT_NAME: activehub-ci
+        run: node scripts/create-local-env.mjs
+      - name: Start real stack
+        working-directory: activehub-backend
+        run: docker compose up --build --wait --wait-timeout 180
+      - run: npm run test:health
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Stop test containers
+        if: always() && steps.configure.outcome == 'success'
+        working-directory: activehub-backend
+        run: docker compose --project-name activehub-ci down

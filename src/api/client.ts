@@ -10,6 +10,9 @@ export type OrganizerRegistration =
   components["schemas"]["OrganizerRegistration"];
 export type ProfilePatch = components["schemas"]["ProfilePatch"];
 export type Notice = components["schemas"]["Notification"];
+export type Event = components["schemas"]["Event"];
+export type EventSession = components["schemas"]["EventSession"];
+export type Organizer = components["schemas"]["OrganizerPublic"];
 
 export class ApiError extends Error {
   constructor(
@@ -70,6 +73,22 @@ export function createApi(baseUrl = "") {
     return task;
   }
   return {
+    async events(query:paths["/api/events"]["get"]["parameters"]["query"]={},owned=false){return owned?result(await client.GET("/api/organizer/events",{params:{query}})):result(await client.GET("/api/events",{params:{query}}));},
+    async event(id:string,owned=false){return owned?result(await client.GET("/api/organizer/events/{id}",{params:{path:{id}}})):result(await client.GET("/api/events/{id}",{params:{path:{id}}}));},
+    async organizers(query:paths["/api/organizers"]["get"]["parameters"]["query"]={}){return result(await client.GET("/api/organizers",{params:{query}}));},
+    async organizer(id:string){return result(await client.GET("/api/organizers/{id}",{params:{path:{id}}}));},
+    async eventSessions(id:string,query:paths["/api/events/{id}/sessions"]["get"]["parameters"]["query"]={}){return result(await client.GET("/api/events/{id}/sessions",{params:{path:{id},query}}));},
+    async ownSessions(query:paths["/api/organizer/sessions"]["get"]["parameters"]["query"]={}){return result(await client.GET("/api/organizer/sessions",{params:{query}}));},
+    createEvent(body:components["schemas"]["EventCreate"],key=crypto.randomUUID()){return mutate(async headers=>result(await client.POST("/api/organizer/events",{headers,params:{header:{"Idempotency-Key":key}},body})));},
+    updateEvent(id:string,body:components["schemas"]["EventPatch"]){return mutate(async headers=>result(await client.PATCH("/api/organizer/events/{id}",{headers,params:{path:{id}},body})));},
+    eventStatus(id:string,status:"ACTIVE"|"PAUSED"){return mutate(async headers=>result(await client.PATCH("/api/organizer/events/{id}/status",{headers,params:{path:{id}},body:{status}})));},
+    cancelEvent(id:string,reason:string,remove=false,key=crypto.randomUUID()){return mutate(async headers=>remove?result(await client.DELETE("/api/organizer/events/{id}",{headers,params:{path:{id},header:{"Idempotency-Key":key}},body:{reason}})):result(await client.POST("/api/organizer/events/{id}/cancel",{headers,params:{path:{id},header:{"Idempotency-Key":key}},body:{reason}})));},
+    createSession(id:string,body:components["schemas"]["SessionWrite"],key=crypto.randomUUID()){return mutate(async headers=>result(await client.POST("/api/organizer/events/{id}/sessions",{headers,params:{path:{id},header:{"Idempotency-Key":key}},body})));},
+    updateSession(id:string,body:components["schemas"]["SessionWrite"]){return mutate(async headers=>result(await client.PATCH("/api/organizer/sessions/{id}",{headers,params:{path:{id}},body})));},
+    cancelSession(id:string,reason:string,remove=false,key=crypto.randomUUID()){return mutate(async headers=>remove?result(await client.DELETE("/api/organizer/sessions/{id}",{headers,params:{path:{id}}})):result(await client.POST("/api/organizer/sessions/{id}/cancel",{headers,params:{path:{id},header:{"Idempotency-Key":key}},body:{reason}})));},
+    uploadEventPhoto(id:string,file:File){return mutate(async headers=>{if(file.size>5*1024*1024)throw Error("Choose an image up to 5 MiB");const body=new FormData();body.set("file",file);const response=await fetch(baseUrl+`/api/organizer/events/${id}/photos`,{method:"POST",credentials:"include",headers,body,signal:AbortSignal.timeout(15000)});const data=await response.json().catch(()=>undefined);return result<components["schemas"]["Photo"]>({response,...(response.ok?{data}:{error:data})});});},
+    orderPhotos(id:string,photoIds:string[]){return mutate(async headers=>result(await client.PUT("/api/organizer/events/{id}/photos/order",{headers,params:{path:{id}},body:{photoIds}})));},
+    deletePhoto(id:string){return mutate(async headers=>result(await client.DELETE("/api/organizer/photos/{id}",{headers,params:{path:{id}}})));},
     async health(signal?: AbortSignal): Promise<Health> {
       const { data, error, response } = await client.GET("/api/health", {
         signal,

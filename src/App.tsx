@@ -17,6 +17,8 @@ import { AdminAccounts } from "./pages/Admin";
 import { Notifications } from "./pages/Notifications";
 import { Feedback, useFormState } from "./components/forms";
 
+import { EventCatalog, EventDetails, OrganizerCatalog, OrganizerDetails } from "./marketplace/Catalog";
+import { EventForm, EventManager } from "./marketplace/Manage";
 function Frame() {
   const session = useSession(),
     state = useFormState(),
@@ -38,7 +40,10 @@ function Frame() {
             <NavLink to={homeFor(session.profile.role)} end>
               Home
             </NavLink>
-            <NavLink to="/profile">Profile</NavLink>
+            <NavLink to="/organizers">Organizers</NavLink>
+<NavLink to="/events">Activities</NavLink>
+{session.profile.role === "ORGANIZER" && <NavLink to="/organizer/events">Manage events</NavLink>}
+<NavLink to="/profile">Profile</NavLink>
             <NavLink to="/notifications">Notifications</NavLink>
             {session.profile.role === "ADMIN" && (
               <NavLink to="/admin/accounts">Administrator access</NavLink>
@@ -127,7 +132,7 @@ function Home() {
             {profile.role === "USER"
               ? "Activity discovery and booking are coming in a later release."
               : profile.role === "ORGANIZER"
-                ? "Event management and performance reports are coming in a later release."
+                ? "Create activities and manage sessions from Manage events. Performance reports arrive later."
                 : "Platform reports and general management tools are coming in a later release."}
           </p>
           <Link className="button" to="/profile">
@@ -189,12 +194,18 @@ function Application() {
         <Route
           path="events"
           element={
-            <Guard role="USER">
-              <Home />
+            <Guard>
+              <EventCatalog /><HealthStatus />
             </Guard>
           }
         />
-        <Route
+        <Route path="events/:id" element={<Guard><EventDetails /></Guard>} />
+<Route path="organizers" element={<Guard><OrganizerCatalog /></Guard>} />
+<Route path="organizers/:id" element={<Guard><OrganizerDetails /></Guard>} />
+<Route path="organizer/events" element={<Guard role="ORGANIZER"><EventCatalog owned /></Guard>} />
+<Route path="organizer/events/new" element={<Guard role="ORGANIZER"><EventForm /></Guard>} />
+<Route path="organizer/events/:id" element={<Guard role="ORGANIZER"><EventManager /></Guard>} />
+<Route
           path="organizer"
           element={
             <Guard role="ORGANIZER">

@@ -696,3 +696,121 @@ textarea {
     flex-direction: column;
   }
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.count-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: -14px;
+  border-radius: 10px;
+  background: #b4311d;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+.conversation-list {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+.conversation-list li {
+  border-bottom: 1px solid #e1e8dc;
+}
+.conversation-list li.unread {
+  background: #f2f7eb;
+}
+.conversation-list a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 16px;
+  padding: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+.conversation-list .preview {
+  grid-column: 1;
+  color: #53665b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conversation-list time {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 12px;
+  color: #58685f;
+}
+.conversation-list .count-badge {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  margin-left: 0;
+}
+.chat {
+  display: grid;
+  gap: 16px;
+}
+.message-log {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: grid;
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
+  background: #f7f9f4;
+  border-radius: 12px;
+}
+.message-log li {
+  max-width: min(80%, 560px);
+  padding: 10px 14px;
+  border-radius: 14px;
+  overflow-wrap: anywhere;
+}
+.message-log li.mine {
+  justify-self: end;
+  background: #1b5c44;
+  color: #fff;
+}
+.message-log li.theirs {
+  justify-self: start;
+  background: #fff;
+  border: 1px solid #e0e7d9;
+}
+.message-log p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.message-log time {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+.message-log .event-card {
+  display: block;
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  color: inherit;
+  font-size: 13px;
+}
+.message-form {
+  display: grid;
+  gap: 8px;
+}
+.message-form textarea {
+  width: 100%;
+  resize: vertical;
+}

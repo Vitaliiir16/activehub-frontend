@@ -1,25 +1,25 @@
 # Backend contract
 
-The canonical English requirements live in [backend/docs/REQUIREMENTS.md](https://github.com/Vitaliiir16/activehub-backend/blob/c40e993b87a8602e4378cd0ebbf06766eeb5421f/docs/REQUIREMENTS.md). The backend owns [OpenAPI](https://github.com/Vitaliiir16/activehub-backend/blob/c40e993b87a8602e4378cd0ebbf06766eeb5421f/docs/openapi.yaml) and [API conventions](https://github.com/Vitaliiir16/activehub-backend/blob/c40e993b87a8602e4378cd0ebbf06766eeb5421f/docs/API_CONVENTIONS.md).
+Backend owns the canonical English requirements, OpenAPI and API conventions. The reviewed source revision is recorded in [backend.json](../contracts/backend.json), with the SHA-256 of [backend.openapi.yaml](../contracts/backend.openapi.yaml). Use the exact commit link from that manifest when reviewing upstream files; the local sibling source is backend/docs/openapi.yaml. New contract changes are reviewed and verified on the backend before this snapshot and generated client are updated.
 
-## Pinned snapshot
+Canonical references: [requirements](https://github.com/Vitaliiir16/activehub-backend/blob/8ac3e377d327e867c15bd32af86c5bd3e3b55d95/docs/REQUIREMENTS.md), [OpenAPI source](https://github.com/Vitaliiir16/activehub-backend/blob/e63887f3b9f3d06166a5957d4cc385e16a3e80d6/docs/openapi.yaml), [API conventions](https://github.com/Vitaliiir16/activehub-backend/blob/8ac3e377d327e867c15bd32af86c5bd3e3b55d95/docs/API_CONVENTIONS.md) and [manual review](https://github.com/Vitaliiir16/activehub-backend/blob/8ac3e377d327e867c15bd32af86c5bd3e3b55d95/docs/ACCOUNTS_REVIEW.md).
 
-Contract source: backend commit `c40e993b87a8602e4378cd0ebbf06766eeb5421f`, API version 0.1.0. [backend.json](../contracts/backend.json) records this full SHA and the SHA-256 of [backend.openapi.yaml](../contracts/backend.openapi.yaml). The snapshot is a consumer copy; edit the backend source first.
+## Available API
 
-`src/api/schema.d.ts` is generated using openapi-typescript. Run `npm.cmd run api:generate` after copying a reviewed backend contract and updating the manifest. `npm.cmd run api:check` verifies its hash and rejects stale generated types. CI checks out that exact backend commit and compares the canonical file byte-for-byte before running the real stack.
+OpenAPI 0.2.0 contains 110 operations: 21 implemented and 89 planned. The client exposes health, CSRF/login/registration/session/logout, own profiles/password/images/preferences, dictionaries, welcome notifications and administrator creation/status. All other routes remain planned, including catalog, bookings, payments, subscriptions, loyalty behavior, chat and optional recovery. Q-01 through Q-05 remain open.
 
-## What works
+src/api/schema.d.ts is generated with openapi-typescript. api:generate rebuilds it; api:check verifies snapshot hash, full backend SHA and generated output. CI checks out that exact public backend commit and compares the canonical file bytes. Snapshot types for a planned operation do not make it available.
 
-The typed client in `src/api/client.ts` exposes only the implemented `GET /api/health`. It sends credentials on same-origin requests and maps documented errors to ApiError. The welcome screen performs a real request, displays loading/success/failure in English, and offers retry. nginx and Vite proxy API requests; there are no backend mocks.
+## Security and UI
 
-OpenAPI describes 109 operations. The remaining 108 are planned, including login/session/CSRF, catalog and every business operation. Generated types for planned operations do not make those operations available. The client deliberately exposes no business methods yet. No authentication or CSRF enforcement is claimed in this delivery.
+Cookie credentials accompany API requests. The client obtains a session/context-bound CSRF token before each unsafe request and serializes mutations. No session token is stored in browser storage. A protected 401 clears the displayed session. Backend DTOs choose allowed profile fields from the authenticated role; owner identity cannot be supplied by the caller. HTTP-only cookies, exact Origin checks, expiry/status checks and access constraints are enforced on the server.
 
-Money is integer UAH minor units, instants are UTC RFC 3339, and the UI will format dates in Europe/Kyiv. Page size defaults to 20; filters and sorting belong in URLs. Planned cookie and CSRF handling, access control and idempotency are defined by the linked backend conventions.
+The optional organizer registration logo uploads after automatic sign-in. A failed logo upload preserves the account and opens profile with a retry message. Profiles can retain their own inactive dictionary selections, using authenticated includeSelected queries. Images are decoded and normalized on the backend and served only to their owner.
 
-## Verified scope
+Role landing pages are /events, /organizer and /admin. They contain honest release placeholders; no fabricated statistics or working catalog are shown. Shared profile/notifications pages use real data. ADMIN-only account creation/access forms do not introduce the optional dedicated administrator list.
 
-`npm.cmd run test:health` calls the typed client through a running frontend proxy and checks the actual API/database response. `npm.cmd run test:e2e` runs Chromium desktop and mobile checks against that same running stack. Set `FRONTEND_BASE_URL` to change the default `http://127.0.0.1:8080`. Install Chromium once with `npx.cmd playwright install chromium`.
+## Evidence and scope
 
-Both browser tests passed locally on the Docker stack, including English text, connected status, no horizontal overflow and no page errors. Screenshots were reviewed at both sizes. This covers the foundation only, not business integration. The final tested backend/frontend pair belongs in backend PROGRESS.md and the paired PR descriptions.
+Local lint/types/build, snapshot/types checks, typed health and eight desktop/mobile browser checks passed against the real Compose stack. The suite exercises registration, validation feedback, profile/email/photo/preferences, reload, logout/login, password change, welcome in-app/Mailpit and seeded/new ADMIN. Screenshots were inspected for English text and responsive layouts. Backend acceptance tests separately cover CSRF, role/ownership denial, unique-email races, expiry/block/deletion revocation, inactive dictionaries, password handling and outbox deduplication.
 
-Q-01 through Q-05 remain open and are not approved by this contract. Stop after stage 03; authentication and other product modules require the next authorized stage.
+Exact tested pairs, PRs and hosted CI results are recorded in backend/docs/PROGRESS.md and the paired PR descriptions. This delivery completes stage 04 only. Email delivery uses durable retries; SMTP acceptance followed by a crash before the database commit remains an external duplicate-delivery window. Future communication triggers and business modules remain planned.

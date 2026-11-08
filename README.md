@@ -1,30 +1,24 @@
 # ActiveHub frontend
 
-The React and TypeScript interface for ActiveHub. The Vite scaffold displays an English welcome screen and checks its connection through a typed API client. Authentication, catalogs, booking and role-specific tools are planned.
+The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. Welcome notifications are real; later catalog and dashboard screens are clearly marked as forthcoming.
 
-## Run locally
+## Start
 
-Clone [activehub-backend](https://github.com/Vitaliiir16/activehub-backend) beside this directory, keeping both repository names. With Node 24 and Docker's Linux engine available, run from `activehub-backend`:
+Clone [activehub-backend](https://github.com/Vitaliiir16/activehub-backend) beside this repository. With Node 24 and Docker's Linux engine running, execute from the backend directory:
 
-```powershell
+~~~powershell
 node scripts/create-local-env.mjs
 docker compose up --build --wait
-```
+~~~
 
-Environment generation is needed once and never overwrites existing configuration. Open <http://localhost:8080>. The backend owns Compose and starts PostgreSQL, required seeds, API, worker, frontend and Mailpit. nginx proxies `/api` to the real backend using the same browser origin. `/uploads` is reserved for future authenticated file handling; no serving endpoint exists yet.
+Generate the environment only once. Open http://localhost:8080. The backend owns Compose, migrations/seeds, PostgreSQL, worker, Mailpit and shared image storage. nginx proxies /api to the real backend using the same origin. Seeded administrator credentials remain in the private backend .env; there are no hardcoded demo credentials.
 
-For Vite development, keep the API running and use:
-
-```powershell
-npm.cmd ci
-npm.cmd run dev
-```
-
-Open <http://localhost:5173>. The proxy defaults to `http://127.0.0.1:3000`; set `API_PROXY_TARGET` in a local `.env` for another port. Never put secrets in browser environment variables.
+For Vite development, run npm.cmd ci and npm.cmd run dev, then open http://localhost:5173. API_PROXY_TARGET defaults to http://127.0.0.1:3000. Configure the backend APP_ORIGINS with the exact Vite origin. Browser environment values are public; never put secrets in them.
 
 ## Checks
 
-```powershell
+~~~powershell
+npm.cmd ci
 npm.cmd run lint
 npm.cmd run typecheck
 npm.cmd run api:check
@@ -32,14 +26,16 @@ npm.cmd run build
 npm.cmd run test:health
 npx.cmd playwright install chromium
 npm.cmd run test:e2e
-```
+~~~
 
-Health and browser checks require the running Compose stack; `FRONTEND_BASE_URL` overrides `http://127.0.0.1:8080`. Desktop and mobile browser tests use the real backend and PostgreSQL. GitHub Actions runs the checks with the exact backend revision in `contracts/backend.json`. PowerShell uses `npm.cmd` and `npx.cmd`; other shells use `npm` and `npx`. Lockfiles pin dependencies, including targeted lint dependency overrides for the minimatch advisory. Product behavior remains unimplemented.
+Health/E2E require the running Compose stack. The E2E runner privately loads only the required administrator credentials and local ports from ../activehub-backend/.env. For an isolated configuration, set ACTIVEHUB_E2E_ENV_FILE to its filename; FRONTEND_BASE_URL and MAILPIT_BASE_URL can override test URLs. No credentials are printed. Eight desktop/mobile Chromium tests exercise actual API/PostgreSQL and Mailpit, including both signup roles, profile/email/photo/preferences, reload, password change, logout/login and seeded/new ADMIN. No backend mocks are used. The backend manual review guide describes the separate test environment.
 
-## Contract and development
+GitHub Actions runs static/generated-type checks, checks out the exact backend commit in contracts/backend.json, compares the OpenAPI snapshot byte-for-byte, starts Compose and runs the browser suite. Cross-repository checkout currently relies on public backend visibility.
 
-[BACKEND_CONTRACT.md](docs/BACKEND_CONTRACT.md) links canonical requirements and records synchronization. Contract changes come first, followed by backend behavior, the typed client and paired checks. New UI, code, messages and documentation use English. Future prices use UAH and dates display in Europe/Kyiv.
+## API and sessions
+
+[BACKEND_CONTRACT.md](docs/BACKEND_CONTRACT.md) records the pinned contract and compatibility evidence. API calls include cookies. Unsafe calls fetch a bound CSRF token and run serially; session expiration returns the interface to sign-in. Credentials are never stored in localStorage. Server checks remain authoritative for roles, ownership, dictionaries, passwords and images.
 
 ## Design patterns
 
-No GoF pattern is implemented in this frontend. When a pattern is justified, this index will name its purpose, real source symbols and a search command. Comments stay concise and in English.
+No GoF pattern is implemented in this frontend. The backend welcome SMTP Adapter is documented in its README. Future frontend patterns will be listed with actual symbols, purpose and search commands when justified.

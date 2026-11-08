@@ -248,7 +248,7 @@ export function DashboardView({
         <Tile
           name="Revenue this month"
           value={money(data.currentMonthNetRevenueMinor)}
-          note="Payments minus refunds"
+          note="Booking and subscription payments minus refunds"
         />
         <Tile
           name="Unread messages"

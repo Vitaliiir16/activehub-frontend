@@ -37,6 +37,12 @@ export function Feedback({ state }: { state: FormState }) {
           {state.fields.form?.map((text) => (
             <p key={text}>{text}</p>
           ))}
+          {Object.entries(state.fields)
+            .filter(([name]) => name !== "form")
+            .flatMap(([, messages]) => messages)
+            .map((text, index) => (
+              <p key={index}>{text}</p>
+            ))}
         </div>
       )}
       {state.success && (

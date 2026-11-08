@@ -212,13 +212,20 @@ function BookingCard({
     </article>
   );
 }
-export function BookingList({ owned = false }: { owned?: boolean }) {
+export function BookingList({
+  owned = false,
+  eventId,
+}: {
+  owned?: boolean;
+  eventId?: string;
+}) {
   const [params, setParams] = useSearchParams(),
     search = params.toString();
   const remote = useRemote(
     useCallback(async () => {
       const q = {
         ...Object.fromEntries(new URLSearchParams(search)),
+        ...(eventId ? { eventId } : {}),
         page: Number(new URLSearchParams(search).get("page") ?? 1),
         pageSize: 20,
       };
@@ -238,7 +245,7 @@ export function BookingList({ owned = false }: { owned?: boolean }) {
         ...r,
         items: r.items.map((booking) => ({ booking, user: undefined })),
       };
-    }, [search, owned]),
+    }, [search, owned, eventId]),
   );
   return (
     <>
@@ -327,6 +334,13 @@ export function BookingList({ owned = false }: { owned?: boolean }) {
           </label>
         </div>
         <button>Apply filters</button>
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => setParams({})}
+        >
+          Reset filters
+        </button>
       </form>
       <Feedback state={remote.state} />
       {remote.data ? (

@@ -27,7 +27,16 @@ if (!env.INITIAL_ADMIN_EMAIL || !env.INITIAL_ADMIN_PASSWORD)
 const result = spawnSync(
   process.execPath,
   ["node_modules/@playwright/test/cli.js", "test", ...process.argv.slice(2)],
-  { env, stdio: "inherit" },
+  { env, encoding: "utf8", maxBuffer: 10 * 1024 * 1024 },
 );
+const redact = (value) =>
+  [env.INITIAL_ADMIN_PASSWORD, "ActiveHubE2e123", "UpdatedActiveHubE2e123"]
+    .filter(Boolean)
+    .reduce(
+      (text, secret) => text.replaceAll(secret, "[redacted]"),
+      value ?? "",
+    );
+process.stdout.write(redact(result.stdout));
+process.stderr.write(redact(result.stderr));
 if (result.error) throw result.error;
 process.exit(result.status ?? 1);

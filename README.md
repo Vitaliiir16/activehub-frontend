@@ -1,6 +1,6 @@
 # ActiveHub frontend
 
-The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. The authenticated catalog, organizer event/session/photo forms, user bookings/list/calendar, organizer decisions, simulated payment and refunded receipts use the real backend. Loyalty/chat and reporting screens remain planned.
+The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. The authenticated catalog, organizer event/session/photo forms, user bookings/list/calendar, organizer decisions, simulated payment and refunded receipts use the real backend. Subscriptions, the member loyalty card and the administrator loyalty settings use the real backend. Chat and reporting screens remain planned.
 
 ## Start
 
@@ -43,3 +43,5 @@ No GoF pattern is claimed in this frontend. Backend SeatPolicy Strategy and SMTP
 The marketplace browser scenario runs once on desktop Chromium against real PostgreSQL/API; it creates an activity, reserves, pays, reloads and cancels to a refunded receipt. It supplements the existing account checks. It does not claim broad calendar/filter/visual coverage. See the backend [manual review](https://github.com/Vitaliiir16/activehub-backend/blob/feature/05-07-marketplace/docs/MARKETPLACE_REVIEW.md). Card credentials remain in the current form/request only, never browser storage. Money displays as UAH; dates use Europe/Kyiv.
 
 Stage 08 adds organizer Plans, subscription purchase, My subscriptions and eligible subscription selection when booking. Purchased terms remain unchanged after plan edits/archive. Corporate loyalty is deferred to stage 09. New subscription browser forms were not E2E-tested in this reduced run.
+
+Stage 09 adds the Loyalty page (card, benefits, balance, Premium progress, monthly free visits and points history) and administrator Loyalty settings (levels, rules, card assignment/lock and points adjustment). Prices, free visits, discounts and awards come from the server; the booking form shows only an estimate before card benefits. A desktop browser test covers earning points and the administrator card and points forms.

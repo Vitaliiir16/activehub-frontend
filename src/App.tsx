@@ -37,6 +37,7 @@ import {
   PurchaseSubscription,
   MySubscriptions,
 } from "./marketplace/Subscriptions";
+import { AdminLoyalty, MyLoyalty } from "./marketplace/Loyalty";
 function Frame() {
   const session = useSession(),
     state = useFormState(),
@@ -75,10 +76,16 @@ function Frame() {
             {session.profile.role === "ORGANIZER" && (
               <NavLink to="/organizer/plans">Plans</NavLink>
             )}
+            {session.profile.role === "USER" && (
+              <NavLink to="/loyalty">Loyalty</NavLink>
+            )}
             <NavLink to="/profile">Profile</NavLink>
             <NavLink to="/notifications">Notifications</NavLink>
             {session.profile.role === "ADMIN" && (
               <NavLink to="/admin/accounts">Administrator access</NavLink>
+            )}
+            {session.profile.role === "ADMIN" && (
+              <NavLink to="/admin/loyalty">Loyalty settings</NavLink>
             )}
             <button
               className="text-button"
@@ -225,6 +232,22 @@ function Application() {
           element={
             <Guard role="USER">
               <MySubscriptions />
+            </Guard>
+          }
+        />
+        <Route
+          path="loyalty"
+          element={
+            <Guard role="USER">
+              <MyLoyalty />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/loyalty"
+          element={
+            <Guard role="ADMIN">
+              <AdminLoyalty />
             </Guard>
           }
         />

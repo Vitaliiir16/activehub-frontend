@@ -352,6 +352,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organizer/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listOwnSessions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organizer/events": {
         parameters: {
             query?: never;
@@ -904,6 +920,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getStatistics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/organizers/{id}/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["adminGetOrganizerStatistics"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1600,6 +1632,9 @@ export interface components {
         };
         Reason: {
             reason: string;
+        };
+        UserCancellation: {
+            reason?: string;
         };
         StatusChange: {
             status: "ACTIVE" | "BLOCKED";
@@ -2781,6 +2816,42 @@ export interface operations {
             503: components["responses"]["Error503"];
         };
     };
+    listOwnSessions: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+                eventId?: string;
+                dateFrom?: string;
+                dateTo?: string;
+                status?: "SCHEDULED" | "CANCELLED" | "COMPLETED";
+                sort?: "startsAtAsc" | "startsAtDesc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    "X-Request-ID"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventSessionPage"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+            409: components["responses"]["Error409"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            503: components["responses"]["Error503"];
+        };
+    };
     listOwnEvents: {
         parameters: {
             query?: {
@@ -3413,7 +3484,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["Reason"];
+                "application/json": components["schemas"]["UserCancellation"];
             };
         };
         responses: {
@@ -4277,6 +4348,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Statistics"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+            409: components["responses"]["Error409"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            503: components["responses"]["Error503"];
+        };
+    };
+    adminGetOrganizerStatistics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    "X-Request-ID"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizerDashboard"];
                 };
             };
             400: components["responses"]["Error400"];

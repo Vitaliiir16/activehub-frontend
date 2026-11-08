@@ -15,6 +15,10 @@ export type OrganizerBooking = components["schemas"]["OrganizerBooking"];
 export type Event = components["schemas"]["Event"];
 export type EventSession = components["schemas"]["EventSession"];
 export type Organizer = components["schemas"]["OrganizerPublic"];
+export type LoyaltyLevel = components["schemas"]["LoyaltyLevel"];
+export type LoyaltyRules = components["schemas"]["LoyaltyRules"];
+export type LoyaltySummary = components["schemas"]["LoyaltySummary"];
+export type PointsTransaction = components["schemas"]["PointsTransaction"];
 
 export class ApiError extends Error {
   constructor(
@@ -75,6 +79,66 @@ export function createApi(baseUrl = "") {
     return task;
   }
   return {
+    async loyalty() {
+      return result(await client.GET("/api/me/loyalty"));
+    },
+    async pointsTransactions(
+      query: paths["/api/me/points-transactions"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(
+        await client.GET("/api/me/points-transactions", { params: { query } }),
+      );
+    },
+    async loyaltyLevels() {
+      return result(await client.GET("/api/admin/loyalty/levels"));
+    },
+    setLoyaltyLevel(body: LoyaltyLevel) {
+      return mutate(async (headers) =>
+        result(
+          await client.PUT("/api/admin/loyalty/levels/{level}", {
+            headers,
+            params: { path: { level: body.level } },
+            body,
+          }),
+        ),
+      );
+    },
+    async loyaltyRules() {
+      return result(await client.GET("/api/admin/loyalty/rules"));
+    },
+    setLoyaltyRules(body: LoyaltyRules) {
+      return mutate(async (headers) =>
+        result(
+          await client.PUT("/api/admin/loyalty/rules", { headers, body }),
+        ),
+      );
+    },
+    assignCard(id: string, body: components["schemas"]["CardAssignment"]) {
+      return mutate(async (headers) =>
+        result(
+          await client.PATCH("/api/admin/users/{id}/card", {
+            headers,
+            params: { path: { id } },
+            body,
+          }),
+        ),
+      );
+    },
+    adjustPoints(
+      id: string,
+      body: components["schemas"]["PointsAdjustment"],
+      key: string,
+    ) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/admin/users/{id}/points-adjustments", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": key } },
+            body,
+          }),
+        ),
+      );
+    },
     async plans(organizerId?: string, page = 1) {
       return organizerId
         ? result(

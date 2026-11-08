@@ -1711,6 +1711,7 @@ export interface components {
             paymentMethod: "CARD" | "SUBSCRIPTION" | "FREE";
             subscriptionUsedId: string | null;
             pointsRedeemed: 0;
+            pointsAwarded: number | null;
             deadlineAt: string | null;
             cancelledBy: ("USER" | "ORGANIZER" | "ADMIN" | "SYSTEM") | null;
             cancelReason: string | null;
@@ -1831,6 +1832,7 @@ export interface components {
             bookingId: string | null;
             delta: number;
             reason: "ACCRUAL" | "REDEEM" | "REVERSAL" | "REFUND_RESTORE" | "ADMIN_ADJUST";
+            note: string | null;
         };
         LoyaltySummary: {
             card: components["schemas"]["LoyaltyLevel"];

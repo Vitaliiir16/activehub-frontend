@@ -43,6 +43,23 @@ export function BookingForm() {
   const data = remote.data;
   const [seats, setSeats] = useState(1),
     [subscriptionId, setSubscription] = useState("");
+  const quote = useRemote(
+    useCallback(
+      () =>
+        api.quoteBooking({
+          sessionId,
+          seats,
+          paymentMethod: subscriptionId ? "SUBSCRIPTION" : "CARD",
+          ...(subscriptionId ? { subscriptionId } : {}),
+        }),
+      [sessionId, seats, subscriptionId],
+    ),
+  );
+  const currentQuote =
+    quote.data?.seats === seats &&
+    (quote.data.subscriptionId ?? "") === subscriptionId
+      ? quote.data
+      : null;
   const subscriptions = useRemote(
     useCallback(() => api.activeSubscriptions(), []),
   );
@@ -103,13 +120,25 @@ export function BookingForm() {
             Comment (optional)
             <textarea name="comment" maxLength={300} />
           </label>
-          <p className="price">
-            {subscriptionId ? "Estimated total" : "Estimated total before card benefits"}:{" "}
-            {money(subscriptionId ? 0 : data.event.effectivePriceMinor * seats)}
-          </p>
+          <Feedback state={quote.state} />
+          {currentQuote && (
+            <section aria-label="Current price breakdown">
+              <p>Base price: {money(currentQuote.basePriceMinor)}</p>
+              {currentQuote.discountBreakdown.map((d, i) => (
+                <p key={i}>
+                  {d.description}: -{money(d.amountMinor)}
+                </p>
+              ))}
+              <p className="price">
+                Current total: {money(currentQuote.amountDueMinor)}
+              </p>
+            </section>
+          )}
           <p>
             The server fixes the final price when reserving your places
-            {subscriptionId ? "" : ", applying free visits and your card discount"}
+            {subscriptionId
+              ? ""
+              : ", applying free visits and your card discount"}
             .{" "}
             {subscriptionId
               ? "Covered by your subscription; organizer approval may still be required."
@@ -140,10 +169,16 @@ export function BookingForm() {
           <Feedback state={subscriptions.state} />
           <p className="hint">
             Only subscriptions covering this session and number of places are
-            offered. Loyalty benefits arrive in stage 09.
+            offered. The price includes current loyalty benefits. Previewing
+            does not reserve places or quota; the final price is fixed when you
+            reserve.
           </p>
           <Feedback state={state} />
-          <button disabled={state.busy || !seats}>Reserve places</button>
+          <button
+            disabled={state.busy || !seats || quote.state.busy || !currentQuote}
+          >
+            Reserve places
+          </button>
         </form>
       ) : (
         <p>Loading booking details...</p>

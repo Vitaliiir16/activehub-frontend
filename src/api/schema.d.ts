@@ -1684,7 +1684,8 @@ export interface components {
             sessionId: string;
             seats: number;
             comment?: string;
-            paymentMethod: "CARD";
+            paymentMethod: "CARD" | "SUBSCRIPTION";
+            subscriptionId?: string;
         };
         Discount: {
             type: "PROMOTION" | "FREE_ACCESS" | "CARD_DISCOUNT" | "POINTS";
@@ -1708,7 +1709,7 @@ export interface components {
             discountBreakdown: components["schemas"]["Discount"][];
             amountDueMinor: number;
             paymentMethod: "CARD" | "SUBSCRIPTION" | "FREE";
-            subscriptionUsedId: null;
+            subscriptionUsedId: string | null;
             pointsRedeemed: 0;
             deadlineAt: string | null;
             cancelledBy: ("USER" | "ORGANIZER" | "ADMIN" | "SYSTEM") | null;
@@ -1784,6 +1785,7 @@ export interface components {
             scope: "ALL_EVENTS" | "DIRECTIONS";
             directionIds: string[];
             status: "ACTIVE" | "ARCHIVED";
+            directionNames?: string[];
         };
         SubscriptionPurchase: {
             planId: string;

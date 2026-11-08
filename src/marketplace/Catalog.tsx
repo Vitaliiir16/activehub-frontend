@@ -16,6 +16,7 @@ import {
   useRemote,
 } from "./shared";
 
+import { Plans } from "./Subscriptions";
 export function EventCard({
   event,
   owned = false,
@@ -435,10 +436,11 @@ export function EventDetails() {
                 View organizer
               </Link>
               <p className="hint">
-                Messaging and subscription plans arrive in later releases.
+                Messaging arrives in a later release.
               </p>
             </section>
           </div>
+          <Plans organizerId={event.organizer.id} />
           <section className="panel section-space">
             <h2>Upcoming sessions</h2>
             <Feedback state={sessions.state} />
@@ -648,6 +650,7 @@ export function OrganizerDetails() {
               <a href={`tel:${remote.data.phone}`}>{remote.data.phone}</a>
             )}
           </section>
+          <Plans organizerId={id}/>
           <EventCatalog organizerId={id} />
         </>
       ) : (

@@ -31,6 +31,12 @@ import {
   BookingDetails,
   BookingCalendar,
 } from "./marketplace/Bookings";
+import {
+  Plans,
+  PlanEditor,
+  PurchaseSubscription,
+  MySubscriptions,
+} from "./marketplace/Subscriptions";
 function Frame() {
   const session = useSession(),
     state = useFormState(),
@@ -62,6 +68,12 @@ function Frame() {
             )}
             {session.profile.role === "ORGANIZER" && (
               <NavLink to="/organizer/bookings">Bookings</NavLink>
+            )}
+            {session.profile.role === "USER" && (
+              <NavLink to="/subscriptions">My subscriptions</NavLink>
+            )}
+            {session.profile.role === "ORGANIZER" && (
+              <NavLink to="/organizer/plans">Plans</NavLink>
             )}
             <NavLink to="/profile">Profile</NavLink>
             <NavLink to="/notifications">Notifications</NavLink>
@@ -208,6 +220,46 @@ function Application() {
   return (
     <Routes>
       <Route element={<Frame />}>
+        <Route
+          path="subscriptions"
+          element={
+            <Guard role="USER">
+              <MySubscriptions />
+            </Guard>
+          }
+        />
+        <Route
+          path="subscription-plans/:id/purchase"
+          element={
+            <Guard role="USER">
+              <PurchaseSubscription />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/plans"
+          element={
+            <Guard role="ORGANIZER">
+              <Plans />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/plans/new"
+          element={
+            <Guard role="ORGANIZER">
+              <PlanEditor />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/plans/:id/edit"
+          element={
+            <Guard role="ORGANIZER">
+              <PlanEditor />
+            </Guard>
+          }
+        />
         <Route index element={<Landing />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />

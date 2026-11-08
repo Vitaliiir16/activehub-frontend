@@ -75,6 +75,96 @@ export function createApi(baseUrl = "") {
     return task;
   }
   return {
+    async plans(organizerId?: string, page = 1) {
+      return organizerId
+        ? result(
+            await client.GET("/api/organizers/{id}/plans", {
+              params: {
+                path: { id: organizerId },
+                query: { page, pageSize: 20 },
+              },
+            }),
+          )
+        : result(
+            await client.GET("/api/organizer/subscription-plans", {
+              params: { query: { page, pageSize: 20 } },
+            }),
+          );
+    },
+    async plan(id: string) {
+      return result(
+        await client.GET("/api/subscription-plans/{id}", {
+          params: { path: { id } },
+        }),
+      );
+    },
+    savePlan(body: components["schemas"]["PlanWrite"], id?: string) {
+      return mutate(async (headers) =>
+        id
+          ? result(
+              await client.PATCH("/api/organizer/subscription-plans/{id}", {
+                headers,
+                params: { path: { id } },
+                body,
+              }),
+            )
+          : result(
+              await client.POST("/api/organizer/subscription-plans", {
+                headers,
+                params: { header: { "Idempotency-Key": crypto.randomUUID() } },
+                body,
+              }),
+            ),
+      );
+    },
+    archivePlan(id: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/organizer/subscription-plans/{id}/archive", {
+            headers,
+            params: {
+              path: { id },
+              header: { "Idempotency-Key": crypto.randomUUID() },
+            },
+          }),
+        ),
+      );
+    },
+    async subscriptions(
+      query: paths["/api/subscriptions"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(
+        await client.GET("/api/subscriptions", { params: { query } }),
+      );
+    },
+    async activeSubscriptions() {
+      const items: components["schemas"]["UserSubscription"][] = [];
+      let page = 1;
+      while (true) {
+        const r = result(
+          await client.GET("/api/subscriptions", {
+            params: { query: { status: "ACTIVE", page, pageSize: 100 } },
+          }),
+        );
+        items.push(...r.items);
+        if (page >= r.meta.totalPages) return items;
+        page++;
+      }
+    },
+    purchaseSubscription(
+      body: components["schemas"]["SubscriptionPurchase"],
+      key: string,
+    ) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/subscriptions", {
+            headers,
+            params: { header: { "Idempotency-Key": key } },
+            body,
+          }),
+        ),
+      );
+    },
     payBooking(
       id: string,
       body: components["schemas"]["CardInput"],

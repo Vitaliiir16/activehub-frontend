@@ -156,7 +156,7 @@ export function Receipts({ booking }: { booking: Booking }) {
         ))
       ) : (
         <p>
-          {booking.paymentMethod === "FREE"
+          {booking.paymentMethod === "SUBSCRIPTION" ? "Covered by subscription visits. No card payment is required." : booking.paymentMethod === "FREE"
             ? "This booking is free. No payment is needed."
             : "No payment attempts yet."}
         </p>

@@ -1,6 +1,6 @@
 # ActiveHub frontend
 
-The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. Welcome notifications are real; later catalog and dashboard screens are clearly marked as forthcoming.
+The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. The authenticated catalog, organizer event/session/photo forms, user bookings/list/calendar, organizer decisions, simulated payment and refunded receipts use the real backend. Subscription/loyalty/chat and reporting screens remain planned.
 
 ## Start
 
@@ -38,4 +38,6 @@ GitHub Actions runs static/generated-type checks, checks out the exact backend c
 
 ## Design patterns
 
-No GoF pattern is implemented in this frontend. The backend welcome SMTP Adapter is documented in its README. Future frontend patterns will be listed with actual symbols, purpose and search commands when justified.
+No GoF pattern is claimed in this frontend. Backend SeatPolicy Strategy and SMTP/card Adapters are indexed with symbols and search commands in its README. Future frontend patterns will be listed with actual symbols, purpose and search commands when justified.
+
+The marketplace browser scenario runs once on desktop Chromium against real PostgreSQL/API; it creates an activity, reserves, pays, reloads and cancels to a refunded receipt. It supplements the existing account checks. It does not claim broad calendar/filter/visual coverage. See the backend [manual review](https://github.com/Vitaliiir16/activehub-backend/blob/feature/05-07-marketplace/docs/MARKETPLACE_REVIEW.md). Card credentials remain in the current form/request only, never browser storage. Money displays as UAH; dates use Europe/Kyiv.

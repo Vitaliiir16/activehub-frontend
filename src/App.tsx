@@ -17,9 +17,20 @@ import { AdminAccounts } from "./pages/Admin";
 import { Notifications } from "./pages/Notifications";
 import { Feedback, useFormState } from "./components/forms";
 
-import { EventCatalog, EventDetails, OrganizerCatalog, OrganizerDetails } from "./marketplace/Catalog";
+import {
+  EventCatalog,
+  Recommendations,
+  EventDetails,
+  OrganizerCatalog,
+  OrganizerDetails,
+} from "./marketplace/Catalog";
 import { EventForm, EventManager } from "./marketplace/Manage";
-import { BookingForm, BookingList, BookingDetails, BookingCalendar } from "./marketplace/Bookings";
+import {
+  BookingForm,
+  BookingList,
+  BookingDetails,
+  BookingCalendar,
+} from "./marketplace/Bookings";
 function Frame() {
   const session = useSession(),
     state = useFormState(),
@@ -42,11 +53,17 @@ function Frame() {
               Home
             </NavLink>
             <NavLink to="/organizers">Organizers</NavLink>
-<NavLink to="/events">Activities</NavLink>
-{session.profile.role === "ORGANIZER" && <NavLink to="/organizer/events">Manage events</NavLink>}
-{session.profile.role === "USER" && <NavLink to="/bookings">My bookings</NavLink>}
-{session.profile.role === "ORGANIZER" && <NavLink to="/organizer/bookings">Bookings</NavLink>}
-<NavLink to="/profile">Profile</NavLink>
+            <NavLink to="/events">Activities</NavLink>
+            {session.profile.role === "ORGANIZER" && (
+              <NavLink to="/organizer/events">Manage events</NavLink>
+            )}
+            {session.profile.role === "USER" && (
+              <NavLink to="/bookings">My bookings</NavLink>
+            )}
+            {session.profile.role === "ORGANIZER" && (
+              <NavLink to="/organizer/bookings">Bookings</NavLink>
+            )}
+            <NavLink to="/profile">Profile</NavLink>
             <NavLink to="/notifications">Notifications</NavLink>
             {session.profile.role === "ADMIN" && (
               <NavLink to="/admin/accounts">Administrator access</NavLink>
@@ -198,23 +215,109 @@ function Application() {
           path="events"
           element={
             <Guard>
-              <EventCatalog /><HealthStatus />
+              {session.profile?.role === "USER" && <Recommendations />}
+              <EventCatalog />
+              <HealthStatus />
             </Guard>
           }
         />
-        <Route path="bookings" element={<Guard role="USER"><BookingList/></Guard>}/>
-<Route path="bookings/new" element={<Guard role="USER"><BookingForm/></Guard>}/>
-<Route path="bookings/calendar" element={<Guard role="USER"><BookingCalendar/></Guard>}/>
-<Route path="bookings/:id" element={<Guard role="USER"><BookingDetails/></Guard>}/>
-<Route path="organizer/bookings" element={<Guard role="ORGANIZER"><BookingList owned/></Guard>}/>
-<Route path="organizer/bookings/:id" element={<Guard role="ORGANIZER"><BookingDetails owned/></Guard>}/>
-<Route path="events/:id" element={<Guard><EventDetails /></Guard>} />
-<Route path="organizers" element={<Guard><OrganizerCatalog /></Guard>} />
-<Route path="organizers/:id" element={<Guard><OrganizerDetails /></Guard>} />
-<Route path="organizer/events" element={<Guard role="ORGANIZER"><EventCatalog owned /></Guard>} />
-<Route path="organizer/events/new" element={<Guard role="ORGANIZER"><EventForm /></Guard>} />
-<Route path="organizer/events/:id" element={<Guard role="ORGANIZER"><EventManager /></Guard>} />
-<Route
+        <Route
+          path="bookings"
+          element={
+            <Guard role="USER">
+              <BookingList />
+            </Guard>
+          }
+        />
+        <Route
+          path="bookings/new"
+          element={
+            <Guard role="USER">
+              <BookingForm />
+            </Guard>
+          }
+        />
+        <Route
+          path="bookings/calendar"
+          element={
+            <Guard role="USER">
+              <BookingCalendar />
+            </Guard>
+          }
+        />
+        <Route
+          path="bookings/:id"
+          element={
+            <Guard role="USER">
+              <BookingDetails />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/bookings"
+          element={
+            <Guard role="ORGANIZER">
+              <BookingList owned />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/bookings/:id"
+          element={
+            <Guard role="ORGANIZER">
+              <BookingDetails owned />
+            </Guard>
+          }
+        />
+        <Route
+          path="events/:id"
+          element={
+            <Guard>
+              <EventDetails />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizers"
+          element={
+            <Guard>
+              <OrganizerCatalog />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizers/:id"
+          element={
+            <Guard>
+              <OrganizerDetails />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/events"
+          element={
+            <Guard role="ORGANIZER">
+              <EventCatalog owned />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/events/new"
+          element={
+            <Guard role="ORGANIZER">
+              <EventForm />
+            </Guard>
+          }
+        />
+        <Route
+          path="organizer/events/:id"
+          element={
+            <Guard role="ORGANIZER">
+              <EventManager />
+            </Guard>
+          }
+        />
+        <Route
           path="organizer"
           element={
             <Guard role="ORGANIZER">

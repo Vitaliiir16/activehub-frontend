@@ -103,11 +103,13 @@ export function BookingForm() {
             <textarea name="comment" maxLength={300} />
           </label>
           <p className="price">
-            Estimated total:{" "}
+            {subscriptionId ? "Estimated total" : "Estimated total before card benefits"}:{" "}
             {money(subscriptionId ? 0 : data.event.effectivePriceMinor * seats)}
           </p>
           <p>
-            The server fixes the final price when reserving your places.{" "}
+            The server fixes the final price when reserving your places
+            {subscriptionId ? "" : ", applying free visits and your card discount"}
+            .{" "}
             {subscriptionId
               ? "Covered by your subscription; organizer approval may still be required."
               : data.event.confirmationMode === "MANUAL"
@@ -448,6 +450,11 @@ export function BookingDetails({ owned = false }: { owned?: boolean }) {
                 </p>
               )}
               {b.paymentMethod === "FREE" && <p>No payment required.</p>}
+              <p>
+                {b.pointsAwarded === null
+                  ? "Loyalty points are awarded when the booking is confirmed."
+                  : `Loyalty points awarded: ${b.pointsAwarded}. They are reversed if this booking is cancelled.`}
+              </p>
               {b.cancelReason && <p>Reason: {b.cancelReason}</p>}
             </section>
           </div>

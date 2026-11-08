@@ -937,3 +937,131 @@ button.danger {
 .status-exhausted {
   background: #fff0d6;
 }
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+}
+.stat-tile {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e0e7d9;
+  border-radius: 12px;
+}
+.stat-name {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #53665b;
+}
+.stat-value {
+  font-size: clamp(18px, 2.2vw, 24px);
+  color: #18342b;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  align-items: start;
+  gap: 16px;
+}
+.chart {
+  margin: 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e0e7d9;
+  border-radius: 12px;
+  min-width: 0;
+}
+.chart figcaption {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #18342b;
+}
+.chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.chart-gridline {
+  stroke: #e1e8dc;
+  stroke-width: 1;
+}
+.chart-axis {
+  font-size: 11px;
+  fill: #53665b;
+}
+.chart-value {
+  font-size: 12px;
+  font-weight: 700;
+  fill: #18342b;
+}
+.chart-bar {
+  fill: #2a78d6;
+}
+.bar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.bar-list li {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.9fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.bar-label {
+  overflow-wrap: anywhere;
+}
+.bar-track {
+  display: block;
+  height: 10px;
+  background: #eef2ea;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: #2a78d6;
+  border-radius: 5px;
+  min-width: 2px;
+}
+.bar-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.chart-data {
+  margin-top: 10px;
+  font-size: 13px;
+}
+.chart-data table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+.chart-data td,
+.chart-data th {
+  text-align: left;
+  padding: 4px 8px;
+  border-bottom: 1px solid #e1e8dc;
+}
+@media (max-width: 760px) {
+  .bar-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .bar-track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+.chart-wide {
+  grid-column: 1 / -1;
+}

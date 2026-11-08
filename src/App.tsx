@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
   BrowserRouter,
   Link,
@@ -16,6 +16,7 @@ import { ProfilePage } from "./pages/Profile";
 import { AdminAccounts } from "./pages/Admin";
 import { Notifications } from "./pages/Notifications";
 import { Feedback, useFormState } from "./components/forms";
+import { HealthStatus } from "./components/HealthStatus";
 
 import {
   EventCatalog,
@@ -43,6 +44,7 @@ import { adminSections } from "./admin/shared";
 import { AdminOrganizerPage, AdminOrganizers, AdminUserPage, AdminUsers } from "./admin/Accounts";
 import { AdminBookings, AdminEvents, AdminSubscriptions } from "./admin/Content";
 import { AdminDictionaries } from "./admin/Dictionaries";
+import { AdminStatistics, OrganizerDashboardPage } from "./admin/Statistics";
 import { UnreadProvider, useUnread } from "./unread";
 function Count({ value, label }: { value: number; label: string }) {
   return value > 0 ? (
@@ -219,25 +221,6 @@ function Home() {
       </section>
       <HealthStatus />
     </>
-  );
-}
-function HealthStatus() {
-  const [status, setStatus] = useState("Checking connection...");
-  useEffect(() => {
-    const controller = new AbortController();
-    api
-      .health(controller.signal)
-      .then(() => setStatus("Connected to ActiveHub"))
-      .catch(() => {
-        if (!controller.signal.aborted)
-          setStatus("Connection unavailable. Reload to try again.");
-      });
-    return () => controller.abort();
-  }, []);
-  return (
-    <p className="connection" role="status">
-      {status}
-    </p>
   );
 }
 function Application() {
@@ -429,7 +412,7 @@ function Application() {
           path="organizer"
           element={
             <Guard role="ORGANIZER">
-              <Home />
+              <OrganizerDashboardPage />
             </Guard>
           }
         />
@@ -438,6 +421,14 @@ function Application() {
           element={
             <Guard role="ADMIN">
               <Home />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/statistics"
+          element={
+            <Guard role="ADMIN">
+              <AdminStatistics />
             </Guard>
           }
         />

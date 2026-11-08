@@ -22,6 +22,9 @@ export type AdminUserDetail = components["schemas"]["AdminUserDetail"];
 export type AdminOrganizerDetail = components["schemas"]["AdminOrganizerDetail"];
 export type Plan = components["schemas"]["SubscriptionPlan"];
 export type UserSubscription = components["schemas"]["UserSubscription"];
+export type Statistics = components["schemas"]["Statistics"];
+export type OrganizerDashboard = components["schemas"]["OrganizerDashboard"];
+export type CountBucket = components["schemas"]["CountBucket"];
 export type LoyaltyLevel = components["schemas"]["LoyaltyLevel"];
 export type LoyaltyRules = components["schemas"]["LoyaltyRules"];
 export type LoyaltySummary = components["schemas"]["LoyaltySummary"];
@@ -86,6 +89,17 @@ export function createApi(baseUrl = "") {
     return task;
   }
   return {
+    async statistics(query: paths["/api/admin/statistics"]["get"]["parameters"]["query"] = {}) {
+      return result(await client.GET("/api/admin/statistics", { params: { query } }));
+    },
+    async organizerDashboard() {
+      return result(await client.GET("/api/organizer/dashboard"));
+    },
+    async adminOrganizerStatistics(id: string) {
+      return result(
+        await client.GET("/api/admin/organizers/{id}/statistics", { params: { path: { id } } }),
+      );
+    },
     async adminUsers(
       query: paths["/api/admin/users"]["get"]["parameters"]["query"] = {},
     ) {

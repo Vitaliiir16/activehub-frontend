@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../api/client";
+import { AdminNav } from "../admin/shared";
 import {
   Feedback,
   Field,
@@ -40,6 +41,7 @@ export function AdminAccounts() {
   }
   return (
     <>
+      <AdminNav />
       <div className="page-heading">
         <p className="eyebrow">ADMINISTRATION</p>
         <h1>Administrator access</h1>

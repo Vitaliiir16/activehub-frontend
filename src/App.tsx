@@ -39,6 +39,10 @@ import {
 } from "./marketplace/Subscriptions";
 import { AdminLoyalty, MyLoyalty } from "./marketplace/Loyalty";
 import { ChatList, ChatThread } from "./pages/Chat";
+import { adminSections } from "./admin/shared";
+import { AdminOrganizerPage, AdminOrganizers, AdminUserPage, AdminUsers } from "./admin/Accounts";
+import { AdminBookings, AdminEvents, AdminSubscriptions } from "./admin/Content";
+import { AdminDictionaries } from "./admin/Dictionaries";
 import { UnreadProvider, useUnread } from "./unread";
 function Count({ value, label }: { value: number; label: string }) {
   return value > 0 ? (
@@ -103,12 +107,6 @@ function Frame() {
             )}
             <NavLink to="/notifications">Notifications</NavLink>
             <Count value={unread.notifications} label="notifications" />
-            {session.profile.role === "ADMIN" && (
-              <NavLink to="/admin/accounts">Administrator access</NavLink>
-            )}
-            {session.profile.role === "ADMIN" && (
-              <NavLink to="/admin/loyalty">Loyalty settings</NavLink>
-            )}
             <button
               className="text-button"
               disabled={state.busy}
@@ -202,15 +200,20 @@ function Home() {
               ? "Activity discovery and booking are coming in a later release."
               : profile.role === "ORGANIZER"
                 ? "Create activities and manage sessions from Manage events. Performance reports arrive later."
-                : "Platform reports and general management tools are coming in a later release."}
+                : "Manage members, organizers, activities, bookings, subscriptions and settings below. Platform reports arrive in a later release."}
           </p>
           <Link className="button" to="/profile">
             Complete your profile
           </Link>
           {profile.role === "ADMIN" && (
-            <Link className="button secondary" to="/admin/accounts">
-              Manage administrator access
-            </Link>
+            <ul className="admin-sections">
+              {adminSections.map(([to, text, about]) => (
+                <li key={to}>
+                  <Link to={to}>{text}</Link>
+                  <p>{about}</p>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </section>
@@ -435,6 +438,70 @@ function Application() {
           element={
             <Guard role="ADMIN">
               <Home />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <Guard role="ADMIN">
+              <AdminUsers />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/users/:id"
+          element={
+            <Guard role="ADMIN">
+              <AdminUserPage />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/organizers"
+          element={
+            <Guard role="ADMIN">
+              <AdminOrganizers />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/organizers/:id"
+          element={
+            <Guard role="ADMIN">
+              <AdminOrganizerPage />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/events"
+          element={
+            <Guard role="ADMIN">
+              <AdminEvents />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/bookings"
+          element={
+            <Guard role="ADMIN">
+              <AdminBookings />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/subscriptions"
+          element={
+            <Guard role="ADMIN">
+              <AdminSubscriptions />
+            </Guard>
+          }
+        />
+        <Route
+          path="admin/dictionaries"
+          element={
+            <Guard role="ADMIN">
+              <AdminDictionaries />
             </Guard>
           }
         />

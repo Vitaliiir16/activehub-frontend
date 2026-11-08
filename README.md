@@ -2,7 +2,7 @@
 
 The web interface for ActiveHub, a marketplace for sports sessions, venue bookings and activities. It will provide separate areas for users, organizers and administrators.
 
-This repository currently contains preparation documents only. There is no runnable application or API client yet.
+The React and TypeScript scaffold runs with Vite and shows an English coming-soon screen. Product features and the typed backend client are the next steps.
 
 ## Stack and setup plan
 
@@ -14,7 +14,7 @@ Clone this repository beside [activehub-backend](https://github.com/Vitaliiir16/
 docker compose up --build
 ```
 
-Compose, package scripts, ports and environment examples do not exist yet. They will be documented alongside the scaffold and infrastructure. Use `npm.cmd` and `npx.cmd` in PowerShell. Never place secrets in frontend environment variables: values shipped to the browser are public.
+For the scaffold, use Node 24 and run `npm.cmd ci`, `npm.cmd run lint`, `npm.cmd run typecheck` and `npm.cmd run build`. `npm.cmd run dev` serves the frontend on port 5173 and proxies `/api` to port 3000. Compose and environment examples follow with infrastructure. Never place secrets in frontend environment variables: values shipped to the browser are public.
 
 ## Development
 
@@ -28,4 +28,4 @@ No design patterns have been implemented yet. Proposed backend patterns are docu
 
 ## Checks and review
 
-Current validation covers documentation and repository hygiene. Type checking, lint, builds, focused component tests and full-stack end-to-end tests will be added with the application. Feature branches and small meaningful commits are required after the initial documentation baseline. Pull requests should state the behavior changed, requirements covered, checks actually run and the compatible backend revision. Merging remains with the repository owner.
+Lint, type checking and the production build are available and verified. Full-stack checks follow with the typed API client. Feature branches and small meaningful commits are required. Pull requests state the behavior changed, requirements covered, checks actually run and compatible backend revision. Merging remains with the repository owner.

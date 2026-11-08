@@ -12,7 +12,11 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "api:generate": "node scripts/generate-api.mjs",
+    "api:check": "node scripts/generate-api.mjs --check",
+    "test:health": "node --import tsx scripts/check-health.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "openapi-fetch": "0.17.0",

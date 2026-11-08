@@ -1,6 +1,6 @@
 # ActiveHub frontend
 
-The React and TypeScript interface for ActiveHub. The current Vite scaffold displays an English welcome screen. Authentication, catalogs, booking and role-specific tools are planned.
+The React and TypeScript interface for ActiveHub. The Vite scaffold displays an English welcome screen and checks its connection through a typed API client. Authentication, catalogs, booking and role-specific tools are planned.
 
 ## Run locally
 
@@ -27,10 +27,14 @@ Open <http://localhost:5173>. The proxy defaults to `http://127.0.0.1:3000`; set
 ```powershell
 npm.cmd run lint
 npm.cmd run typecheck
+npm.cmd run api:check
 npm.cmd run build
+npm.cmd run test:health
+npx.cmd playwright install chromium
+npm.cmd run test:e2e
 ```
 
-PowerShell uses `npm.cmd` and `npx.cmd`; other shells use `npm` and `npx`. Lockfiles pin dependencies, including targeted lint dependency overrides for the minimatch advisory. Product behavior remains unimplemented.
+Health and browser checks require the running Compose stack; `FRONTEND_BASE_URL` overrides `http://127.0.0.1:8080`. Desktop and mobile browser tests use the real backend and PostgreSQL. GitHub Actions runs the checks with the exact backend revision in `contracts/backend.json`. PowerShell uses `npm.cmd` and `npx.cmd`; other shells use `npm` and `npx`. Lockfiles pin dependencies, including targeted lint dependency overrides for the minimatch advisory. Product behavior remains unimplemented.
 
 ## Contract and development
 

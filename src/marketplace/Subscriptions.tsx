@@ -7,10 +7,11 @@ import {
 } from "react-router-dom";
 import { api, type Event } from "../api/client";
 import type { components, paths } from "../api/schema";
-import { Feedback, text, useFormState } from "../components/forms";
+import { Feedback, text, useFormState, type FormState } from "../components/forms";
 import { dateTime, label, minor, money, Pagination, useRemote } from "./shared";
 import { useSession } from "../session";
 type Plan = components["schemas"]["SubscriptionPlan"];
+function FormErrors({state}:{state:FormState}) { return <><Feedback state={state}/>{Object.entries(state.fields).filter(([name])=>name!=="form").flatMap(([,messages])=>messages).map((message,index)=><p className="field-error" key={index}>{message}</p>)}</>; }
 export type Subscription = components["schemas"]["UserSubscription"];
 export const subscriptionCovers = (
   s: Subscription,
@@ -65,7 +66,7 @@ export function Plans({ organizerId }: { organizerId?: string }) {
         )}
       </div>
       <Feedback state={remote.state} />
-      <Feedback state={state} />
+      <FormErrors state={state} />
       {remote.data ? (
         <>
           <div className="event-grid">
@@ -280,7 +281,7 @@ export function PlanEditor() {
             One-time: exactly one visit. Corporate: company name at purchase and
             at least two visits. Monthly: limited or unlimited visits.
           </p>
-          <Feedback state={state} />
+          <FormErrors state={state} />
           <button disabled={state.busy}>Save plan</button>
         </form>
       ) : (
@@ -405,7 +406,7 @@ export function PurchaseSubscription() {
               />
             </label>
           </div>
-          <Feedback state={state} />
+          <FormErrors state={state} />
           <button disabled={state.busy || remote.data.status !== "ACTIVE"}>
             {state.busy ? "Processing..." : "Buy subscription"}
           </button>
@@ -493,7 +494,7 @@ export function MySubscriptions() {
                   <Link
                     to={`/events?organizerId=${s.plan.organizerId}&cityId=all`}
                   >
-                    Find an eligible activity
+                    View organizer activities
                   </Link>
                 )}
               </article>

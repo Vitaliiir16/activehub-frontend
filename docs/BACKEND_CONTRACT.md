@@ -33,3 +33,7 @@ The real desktop browser flow creates an event in the organizer form, finds it a
 Payment requests reuse their UUID key after a transport failure with unchanged input; a declined response starts a new attempt. PAN/CVV remain in memory/form/request only. The backend returns integer UAH minor units and UTC instants; the UI formats UAH and Europe/Kyiv. CARD creation becomes FREE when the server price is zero. subscriptionUsedId is null and pointsRedeemed zero until stages 08-09; the UI explicitly describes these benefits as unavailable. Full cross-stage pricing/compensation acceptance remains unfinished.
 
 The first hosted marketplace run passed the new workflow but the old account health assertion matched both catalog loading and connection status. The assertion now targets connection status explicitly; no check was disabled. Final-head CI evidence is in the PR and local handoff.
+
+## Stage 08
+
+Contract 0.4.0 adds plan management/purchase and own subscriptions. Booking offers only currently eligible subscriptions; the server independently checks owner, organizer, scope, session validity and visits. Purchases snapshot terms and cannot be refunded. Corporate loyalty remains stage 09. Typecheck/build passed; the real API/DB visit smoke and last-visit/repeated-return race passed. New browser forms and full regressions were not run locally. The manifest pins the backend implementation; later documentation-only changes do not change its contract/runtime.

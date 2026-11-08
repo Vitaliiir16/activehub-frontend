@@ -1,6 +1,6 @@
 # ActiveHub frontend
 
-The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. The authenticated catalog, organizer event/session/photo forms, user bookings/list/calendar, organizer decisions, simulated payment and refunded receipts use the real backend. Subscriptions, the member loyalty card and the administrator loyalty settings use the real backend. Chat and reporting screens remain planned.
+The React/TypeScript interface for ActiveHub. Accounts and access are available with English forms, role navigation and responsive layouts. Users and organizers can register, edit their profiles/photos/preferences, change passwords and sign out. Administrators can create other administrators and update their access. The authenticated catalog, organizer event/session/photo forms, user bookings/list/calendar, organizer decisions, simulated payment and refunded receipts use the real backend. Subscriptions, the member loyalty card, the administrator loyalty settings, notifications and user-organizer chat use the real backend. Administration and reporting screens remain planned.
 
 ## Start
 
@@ -45,3 +45,5 @@ The marketplace browser scenario runs once on desktop Chromium against real Post
 Stage 08 adds organizer Plans, subscription purchase, My subscriptions and eligible subscription selection when booking. Purchased terms remain unchanged after plan edits/archive. Corporate loyalty is deferred to stage 09. New subscription browser forms were not E2E-tested in this reduced run.
 
 Stage 09 adds the Loyalty page (card, benefits, balance, Premium progress, monthly free visits and points history) and administrator Loyalty settings (levels, rules, card assignment/lock and points adjustment). Prices, free visits, discounts and awards come from the server; the booking form shows only an estimate before card benefits. A desktop browser test covers earning points and the administrator card and points forms.
+
+Stage 10 adds Messages (conversation list and thread) and header unread badges for notifications and messages. Both update by polling, without reloading the page, and pause while the tab is hidden. Notifications link to their subject, can be filtered to unread and show whether they were also emailed. Emails are sent by the backend worker: by default into Mailpit at http://localhost:8025, or through a real provider such as Gmail when the backend `.env` is configured (see the backend README, Email). A desktop browser test covers live chat and unread badges.

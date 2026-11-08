@@ -15,6 +15,8 @@ export type OrganizerBooking = components["schemas"]["OrganizerBooking"];
 export type Event = components["schemas"]["Event"];
 export type EventSession = components["schemas"]["EventSession"];
 export type Organizer = components["schemas"]["OrganizerPublic"];
+export type Conversation = components["schemas"]["Conversation"];
+export type ChatMessage = components["schemas"]["Message"];
 export type LoyaltyLevel = components["schemas"]["LoyaltyLevel"];
 export type LoyaltyRules = components["schemas"]["LoyaltyRules"];
 export type LoyaltySummary = components["schemas"]["LoyaltySummary"];
@@ -668,11 +670,75 @@ export function createApi(baseUrl = "") {
         ),
       );
     },
-    async notifications(page = 1) {
+    async notifications(page = 1, unreadOnly = false) {
       return result(
         await client.GET("/api/notifications", {
+          params: {
+            query: { page, pageSize: 20, ...(unreadOnly ? { unreadOnly } : {}) },
+          },
+        }),
+      );
+    },
+    async unreadNotifications() {
+      return result(
+        await client.GET("/api/notifications", {
+          params: { query: { page: 1, pageSize: 1, unreadOnly: true } },
+        }),
+      ).meta.totalItems;
+    },
+    async conversations(page = 1) {
+      return result(
+        await client.GET("/api/conversations", {
           params: { query: { page, pageSize: 20 } },
         }),
+      );
+    },
+    startConversation(body: components["schemas"]["ConversationCreate"]) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/conversations", {
+            headers,
+            params: { header: { "Idempotency-Key": crypto.randomUUID() } },
+            body,
+          }),
+        ),
+      );
+    },
+    async messages(
+      id: string,
+      query: {
+        afterId?: string;
+        sort?: "oldest" | "newest";
+        pageSize?: number;
+        page?: number;
+      } = {},
+    ) {
+      return result(
+        await client.GET("/api/conversations/{id}/messages", {
+          params: { path: { id }, query: { pageSize: 50, ...query } },
+        }),
+      );
+    },
+    sendMessage(id: string, body: components["schemas"]["MessageCreate"], key: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/conversations/{id}/messages", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": key } },
+            body,
+          }),
+        ),
+      );
+    },
+    readConversation(id: string, throughMessageId: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/conversations/{id}/read", {
+            headers,
+            params: { path: { id } },
+            body: { throughMessageId },
+          }),
+        ),
       );
     },
     readNotification(id: string) {

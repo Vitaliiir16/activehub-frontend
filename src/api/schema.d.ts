@@ -1863,6 +1863,8 @@ export interface components {
             organizerId: string;
             lastMessageAt: string | null;
             unreadCount: number;
+            counterpartName: string;
+            lastMessageText: string | null;
         };
         ConversationCreate: {
             organizerId?: string;
@@ -1882,6 +1884,7 @@ export interface components {
             senderId: string;
             text: string;
             eventId: string | null;
+            eventTitle: string | null;
             readAt: string | null;
         };
         ReadConversation: {
@@ -2031,6 +2034,7 @@ export interface components {
         ConversationPage: {
             items: components["schemas"]["Conversation"][];
             meta: components["schemas"]["PageMeta"];
+            unreadTotal: number;
         };
         MessagePage: {
             items: components["schemas"]["Message"][];
@@ -4159,6 +4163,15 @@ export interface operations {
             };
         };
         responses: {
+            200: {
+                headers: {
+                    "X-Request-ID"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversation"];
+                };
+            };
             201: {
                 headers: {
                     "X-Request-ID"?: string;

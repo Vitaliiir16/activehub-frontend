@@ -38,8 +38,23 @@ import {
   MySubscriptions,
 } from "./marketplace/Subscriptions";
 import { AdminLoyalty, MyLoyalty } from "./marketplace/Loyalty";
+import { ChatList, ChatThread } from "./pages/Chat";
+import { UnreadProvider, useUnread } from "./unread";
+function Count({ value, label }: { value: number; label: string }) {
+  return value > 0 ? (
+    <>
+      <span className="count-badge" aria-hidden="true">
+        {value > 99 ? "99+" : value}
+      </span>
+      <span className="sr-only" role="status">
+        {value} unread {label}
+      </span>
+    </>
+  ) : null;
+}
 function Frame() {
   const session = useSession(),
+    unread = useUnread(),
     state = useFormState(),
     navigate = useNavigate();
   return (
@@ -80,7 +95,14 @@ function Frame() {
               <NavLink to="/loyalty">Loyalty</NavLink>
             )}
             <NavLink to="/profile">Profile</NavLink>
+            {session.profile.role !== "ADMIN" && (
+              <NavLink to="/chat">Messages</NavLink>
+            )}
+            {session.profile.role !== "ADMIN" && (
+              <Count value={unread.messages} label="messages" />
+            )}
             <NavLink to="/notifications">Notifications</NavLink>
+            <Count value={unread.notifications} label="notifications" />
             {session.profile.role === "ADMIN" && (
               <NavLink to="/admin/accounts">Administrator access</NavLink>
             )}
@@ -123,6 +145,14 @@ function Guard({
   if (role && session.profile.role !== role)
     return <Navigate to={homeFor(session.profile.role)} replace />;
   return children;
+}
+function MemberOnly({ children }: { children: ReactNode }) {
+  const session = useSession();
+  return session.profile?.role === "ADMIN" ? (
+    <Navigate to={homeFor("ADMIN")} replace />
+  ) : (
+    children
+  );
 }
 function Landing() {
   const session = useSession();
@@ -425,6 +455,26 @@ function Application() {
           }
         />
         <Route
+          path="chat"
+          element={
+            <Guard>
+              <MemberOnly>
+                <ChatList />
+              </MemberOnly>
+            </Guard>
+          }
+        />
+        <Route
+          path="chat/:id"
+          element={
+            <Guard>
+              <MemberOnly>
+                <ChatThread />
+              </MemberOnly>
+            </Guard>
+          }
+        />
+        <Route
           path="notifications"
           element={
             <Guard>
@@ -449,7 +499,9 @@ export function App() {
   return (
     <BrowserRouter>
       <SessionProvider>
-        <Application />
+        <UnreadProvider>
+          <Application />
+        </UnreadProvider>
       </SessionProvider>
     </BrowserRouter>
   );

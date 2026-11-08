@@ -19,6 +19,7 @@ import {
 
 import { subscriptionCovers } from "./Subscriptions";
 import { PaymentForm, Receipts } from "./Payments";
+import { StartChat } from "../pages/Chat";
 export function BookingForm() {
   const [params] = useSearchParams(),
     id = params.get("eventId") ?? "",
@@ -363,6 +364,9 @@ export function BookingDetails({ owned = false }: { owned?: boolean }) {
                       {remote.data.user.email} · {remote.data.user.phone}
                     </p>
                   )}
+                  <StartChat input={{ bookingId: b.id }}>
+                    Message this member
+                  </StartChat>
                 </>
               )}
               {b.deadlineAt && <p>Deadline: {dateTime(b.deadlineAt)}</p>}

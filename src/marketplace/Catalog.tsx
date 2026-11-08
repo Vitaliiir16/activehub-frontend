@@ -17,6 +17,7 @@ import {
 } from "./shared";
 
 import { Plans } from "./Subscriptions";
+import { StartChat } from "../pages/Chat";
 export function EventCard({
   event,
   owned = false,
@@ -440,6 +441,11 @@ export function EventDetails() {
               </p>
             </section>
           </div>
+          {session.profile?.role === "USER" && (
+            <div className="section-space">
+              <StartChat input={{ eventId: id }}>Message organizer</StartChat>
+            </div>
+          )}
           <Plans organizerId={event.organizer.id} />
           <section className="panel section-space">
             <h2>Upcoming sessions</h2>
@@ -625,7 +631,8 @@ export function OrganizerCatalog() {
   );
 }
 export function OrganizerDetails() {
-  const { id = "" } = useParams();
+  const { id = "" } = useParams(),
+    role = useSession().profile?.role;
   const remote = useRemote(useCallback(() => api.organizer(id), [id]));
   return (
     <>
@@ -648,6 +655,9 @@ export function OrganizerDetails() {
             <p className="preserve-lines">{remote.data.description}</p>
             {remote.data.phone && (
               <a href={`tel:${remote.data.phone}`}>{remote.data.phone}</a>
+            )}
+            {role === "USER" && (
+              <StartChat input={{ organizerId: id }}>Message organizer</StartChat>
             )}
           </section>
           <Plans organizerId={id}/>

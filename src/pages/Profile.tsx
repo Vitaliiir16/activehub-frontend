@@ -403,8 +403,10 @@ function Preferences() {
             ))}
           </div>
           <p className="hint">
-            In-app notifications and booking emails are always enabled. These
-            categories will apply as their features become available.
+            In-app notifications and booking emails are always enabled. Choose
+            which other emails you also receive. Points emails and message
+            emails are off by default; card upgrade emails are sent until you
+            change the points and card setting.
           </p>
           <button disabled={state.busy}>Save email preferences</button>
         </form>

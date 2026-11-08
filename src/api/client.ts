@@ -158,6 +158,18 @@ export function createApi(baseUrl = "") {
     },
     uploadPhoto(file: File) {
       return mutate(async (headers) => {
+        if (
+          !file.size ||
+          file.size > 5 * 1024 * 1024 ||
+          !["image/jpeg", "image/png", "image/webp"].includes(file.type)
+        )
+          throw new ApiError(
+            422,
+            "VALIDATION_FAILED",
+            "Choose a JPEG, PNG or WebP image up to 5 MiB",
+            undefined,
+            { file: ["Choose a JPEG, PNG or WebP image up to 5 MiB"] },
+          );
         const body = new FormData();
         body.set("file", file);
         const response = await fetch(baseUrl + "/api/me/photo", {
@@ -165,8 +177,9 @@ export function createApi(baseUrl = "") {
           credentials: "include",
           headers,
           body,
+          signal: AbortSignal.timeout(15000),
         });
-        const data = await response.json();
+        const data = await response.json().catch(() => undefined);
         return result<components["schemas"]["Photo"]>({
           response,
           ...(response.ok ? { data } : { error: data }),

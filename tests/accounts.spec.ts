@@ -26,6 +26,7 @@ for (const role of ["USER", "ORGANIZER"] as const) {
     request,
   }, info) => {
     const email = `e2e-${role.toLowerCase()}-${randomUUID()}@example.test`;
+    const updatedEmail = `updated-${email}`;
     let currentPassword = password;
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
@@ -87,19 +88,19 @@ for (const role of ["USER", "ORGANIZER"] as const) {
       await page
         .getByLabel("Organization or trainer name")
         .fill("Movement Studio");
+    await page.getByLabel("Email", { exact: true }).fill(updatedEmail);
+    if (role === "USER") await page.getByLabel("Yoga", { exact: true }).check();
     await page
       .getByRole("button", { name: "Save profile", exact: true })
       .click();
     await expect(
       page.getByText("Profile saved", { exact: true }),
     ).toBeVisible();
-    await page
-      .getByLabel("Choose image", { exact: true })
-      .setInputFiles({
-        name: "profile.png",
-        mimeType: "image/png",
-        buffer: image,
-      });
+    await page.getByLabel("Choose image", { exact: true }).setInputFiles({
+      name: "profile.png",
+      mimeType: "image/png",
+      buffer: image,
+    });
     await page
       .getByRole("button", { name: "Upload image", exact: true })
       .click();
@@ -121,6 +122,11 @@ for (const role of ["USER", "ORGANIZER"] as const) {
       ),
     ).toHaveValue(role === "USER" ? "Jordan" : "Movement Studio");
     await expect(page.getByLabel("Messages", { exact: true })).toBeChecked();
+    await expect(page.getByLabel("Email", { exact: true })).toHaveValue(
+      updatedEmail,
+    );
+    if (role === "USER")
+      await expect(page.getByLabel("Yoga", { exact: true })).toBeChecked();
     await expect(
       page.getByAltText(
         role === "USER" ? "Your profile photo" : "Your organization logo",
@@ -188,7 +194,7 @@ for (const role of ["USER", "ORGANIZER"] as const) {
     await expect(
       page.getByRole("button", { name: "Sign in", exact: true }),
     ).toBeVisible();
-    await login(page, email, "Incorrect123");
+    await login(page, updatedEmail, "Incorrect123");
     await expect(page.getByRole("alert")).toHaveText(
       "Email or password is incorrect",
     );

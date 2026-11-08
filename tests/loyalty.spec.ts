@@ -172,7 +172,7 @@ test("member earns points and an administrator assigns a locked card and adjusts
       card.getByText("An administrator set this card", { exact: false }),
     ).toBeVisible();
     expect(await user.locator("body").innerText()).not.toMatch(
-      /[Ѐ-ӿ]/,
+      /[\u0400-\u04ff]/,
     );
   } finally {
     await Promise.all(contexts.map((c) => c.close()));

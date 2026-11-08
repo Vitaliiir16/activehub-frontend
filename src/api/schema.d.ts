@@ -1408,6 +1408,22 @@ export interface paths {
         patch: operations["setAdministratorStatus"];
         trace?: never;
     };
+    "/api/media/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getProfilePhoto"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1476,7 +1492,6 @@ export interface components {
             cityId: string;
             phone: string;
             description?: string;
-            logoId?: string;
         };
         UserProfile: {
             id: string;
@@ -1519,21 +1534,7 @@ export interface components {
             displayName: string;
         };
         Profile: components["schemas"]["UserProfile"] | components["schemas"]["OrganizerProfile"] | components["schemas"]["AdminProfile"];
-        ProfilePatch: {
-            email?: string;
-            firstName?: string;
-            lastName?: string;
-            phone?: string;
-            cityId?: string;
-            gender?: "MALE" | "FEMALE" | "UNDISCLOSED";
-            photoId?: string | null;
-            preferredDirectionIds?: string[];
-            name?: string;
-            type?: "TRAINER" | "CLUB" | "VENUE" | "ORGANIZER";
-            directionIds?: string[];
-            description?: string;
-            logoId?: string | null;
-        };
+        ProfilePatch: components["schemas"]["USERProfilePatch"] | components["schemas"]["ORGANIZERProfilePatch"] | components["schemas"]["ADMINProfilePatch"];
         PasswordChange: {
             currentPassword: string;
             newPassword: string;
@@ -2011,6 +2012,30 @@ export interface components {
             directionIds?: string[];
         };
         LoyaltyLevelList: components["schemas"]["LoyaltyLevel"][];
+        USERProfilePatch: {
+            email?: string;
+            firstName?: string;
+            lastName?: string;
+            phone?: string;
+            cityId?: string;
+            gender?: "MALE" | "FEMALE" | "UNDISCLOSED";
+            photoId?: string | null;
+            preferredDirectionIds?: string[];
+        };
+        ORGANIZERProfilePatch: {
+            email?: string;
+            name?: string;
+            type?: "TRAINER" | "CLUB" | "VENUE" | "ORGANIZER";
+            phone?: string | null;
+            cityId?: string;
+            description?: string;
+            logoId?: string | null;
+            directionIds?: string[];
+        };
+        ADMINProfilePatch: {
+            email?: string;
+            displayName?: string;
+        };
     };
     responses: {
         Error503: {
@@ -2081,6 +2106,14 @@ export interface components {
             headers: {
                 "X-Request-ID"?: string;
                 "Retry-After"?: number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        Error413: {
+            headers: {
                 [name: string]: unknown;
             };
             content: {
@@ -2171,6 +2204,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -2203,6 +2237,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -2235,6 +2270,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -2261,6 +2297,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -2362,6 +2399,7 @@ export interface operations {
                 page?: number;
                 pageSize?: number;
                 sort?: "newest" | "oldest";
+                includeSelected?: boolean;
             };
             header?: never;
             path?: never;
@@ -2394,6 +2432,7 @@ export interface operations {
                 page?: number;
                 pageSize?: number;
                 sort?: "newest" | "oldest";
+                includeSelected?: boolean;
             };
             header?: never;
             path?: never;
@@ -2475,6 +2514,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -2505,6 +2545,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -2539,6 +2580,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -4235,6 +4277,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -4263,6 +4306,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -4323,6 +4367,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5663,6 +5708,7 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
@@ -5697,9 +5743,34 @@ export interface operations {
             403: components["responses"]["Error403"];
             404: components["responses"]["Error404"];
             409: components["responses"]["Error409"];
+            413: components["responses"]["Error413"];
             422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             503: components["responses"]["Error503"];
+        };
+    };
+    getProfilePhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/webp": string;
+                };
+            };
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
         };
     };
 }

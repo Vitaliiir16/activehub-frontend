@@ -2,6 +2,7 @@ import { useCallback, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api, type LoyaltyLevel, type LoyaltyRules } from "../api/client";
 import { Feedback, Field, Input, text, useFormState } from "../components/forms";
+import { AdminNav } from "../admin/shared";
 import { dateTime, label, Pagination, useRemote } from "./shared";
 
 const reasons: Record<string, string> = {
@@ -274,6 +275,7 @@ export function AdminLoyalty() {
   );
   return (
     <>
+      <AdminNav />
       <div className="page-heading">
         <p className="eyebrow">ADMINISTRATION</p>
         <h1>Loyalty settings</h1>

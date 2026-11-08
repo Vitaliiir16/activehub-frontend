@@ -814,3 +814,126 @@ textarea {
   width: 100%;
   resize: vertical;
 }
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0 0 24px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e1e8dc;
+}
+.admin-nav a {
+  font-size: 14px;
+  color: #53665b;
+  text-decoration: none;
+  padding: 4px 0;
+}
+.admin-nav a.active {
+  color: #1b5c44;
+  font-weight: 750;
+  text-decoration: underline;
+}
+.admin-sections {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.admin-sections li {
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e0e7d9;
+  border-radius: 12px;
+}
+.admin-sections a {
+  font-weight: 700;
+}
+.admin-sections p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #53665b;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.data-table th,
+.data-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e1e8dc;
+}
+.data-table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #53665b;
+  white-space: nowrap;
+}
+.data-table td {
+  min-width: 90px;
+}
+button.danger {
+  background: #b4311d;
+  color: #fff;
+  border-color: #b4311d;
+}
+.reason-action {
+  margin: 8px 0;
+}
+.reason-action form {
+  display: grid;
+  gap: 8px;
+  max-width: 520px;
+}
+.reason-action textarea {
+  width: 100%;
+}
+.moderation {
+  display: grid;
+  gap: 16px;
+  padding: 8px 0 8px 12px;
+  border-left: 3px solid #d3f58c;
+}
+.moderation form {
+  display: grid;
+  gap: 8px;
+  max-width: 640px;
+}
+.photo-moderation {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.photo-moderation img {
+  display: block;
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px 12px;
+}
+.status-blocked,
+.status-deleted,
+.status-inactive,
+.status-archived {
+  background: #f6e5e2;
+}
+.status-exhausted {
+  background: #fff0d6;
+}

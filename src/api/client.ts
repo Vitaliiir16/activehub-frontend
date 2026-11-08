@@ -17,6 +17,11 @@ export type EventSession = components["schemas"]["EventSession"];
 export type Organizer = components["schemas"]["OrganizerPublic"];
 export type Conversation = components["schemas"]["Conversation"];
 export type ChatMessage = components["schemas"]["Message"];
+export type AccountSummary = components["schemas"]["AccountSummary"];
+export type AdminUserDetail = components["schemas"]["AdminUserDetail"];
+export type AdminOrganizerDetail = components["schemas"]["AdminOrganizerDetail"];
+export type Plan = components["schemas"]["SubscriptionPlan"];
+export type UserSubscription = components["schemas"]["UserSubscription"];
 export type LoyaltyLevel = components["schemas"]["LoyaltyLevel"];
 export type LoyaltyRules = components["schemas"]["LoyaltyRules"];
 export type LoyaltySummary = components["schemas"]["LoyaltySummary"];
@@ -81,6 +86,226 @@ export function createApi(baseUrl = "") {
     return task;
   }
   return {
+    async adminUsers(
+      query: paths["/api/admin/users"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(await client.GET("/api/admin/users", { params: { query } }));
+    },
+    async adminUser(id: string) {
+      return result(
+        await client.GET("/api/admin/users/{id}", { params: { path: { id } } }),
+      );
+    },
+    adminEditUser(id: string, body: components["schemas"]["ProfilePatch"]) {
+      return mutate(async (headers) =>
+        result(
+          await client.PATCH("/api/admin/users/{id}", {
+            headers,
+            params: { path: { id } },
+            body,
+          }),
+        ),
+      );
+    },
+    adminUserStatus(id: string, body: components["schemas"]["StatusChange"]) {
+      return mutate(async (headers) =>
+        result(
+          await client.PATCH("/api/admin/users/{id}/status", {
+            headers,
+            params: { path: { id } },
+            body,
+          }),
+        ),
+      );
+    },
+    adminDeleteUser(id: string, reason: string, key: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.DELETE("/api/admin/users/{id}", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": key } },
+            body: { reason },
+          }),
+        ),
+      );
+    },
+    async adminOrganizers(
+      query: paths["/api/admin/organizers"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(
+        await client.GET("/api/admin/organizers", { params: { query } }),
+      );
+    },
+    async adminOrganizer(id: string) {
+      return result(
+        await client.GET("/api/admin/organizers/{id}", {
+          params: { path: { id } },
+        }),
+      );
+    },
+    adminEditOrganizer(id: string, body: components["schemas"]["ProfilePatch"]) {
+      return mutate(async (headers) =>
+        result(
+          await client.PATCH("/api/admin/organizers/{id}", {
+            headers,
+            params: { path: { id } },
+            body,
+          }),
+        ),
+      );
+    },
+    adminOrganizerStatus(id: string, body: components["schemas"]["StatusChange"]) {
+      return mutate(async (headers) =>
+        result(
+          await client.PATCH("/api/admin/organizers/{id}/status", {
+            headers,
+            params: { path: { id } },
+            body,
+          }),
+        ),
+      );
+    },
+    adminDeleteOrganizer(id: string, reason: string, key: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.DELETE("/api/admin/organizers/{id}", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": key } },
+            body: { reason },
+          }),
+        ),
+      );
+    },
+    async adminEvents(
+      query: paths["/api/admin/events"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(await client.GET("/api/admin/events", { params: { query } }));
+    },
+    adminEventStatus(id: string, status: "ACTIVE" | "BLOCKED", reason: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.PATCH("/api/admin/events/{id}/status", {
+            headers,
+            params: { path: { id } },
+            body: { status, reason },
+          }),
+        ),
+      );
+    },
+    adminEditEvent(id: string, body: components["schemas"]["EventPatch"]) {
+      return mutate(async (headers) =>
+        result(
+          await client.PATCH("/api/admin/events/{id}", {
+            headers,
+            params: { path: { id } },
+            body,
+          }),
+        ),
+      );
+    },
+    adminCancelEvent(id: string, reason: string, key: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/admin/events/{id}/cancel", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": key } },
+            body: { reason },
+          }),
+        ),
+      );
+    },
+    adminDeleteEvent(id: string, reason: string, key: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.DELETE("/api/admin/events/{id}", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": key } },
+            body: { reason },
+          }),
+        ),
+      );
+    },
+    adminDeletePhoto(id: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.DELETE("/api/admin/photos/{id}", {
+            headers,
+            params: { path: { id } },
+          }),
+        ),
+      );
+    },
+    async adminBookings(
+      query: paths["/api/admin/bookings"]["get"]["parameters"]["query"] = {},
+    ) {
+      const r = result(
+        await client.GET("/api/admin/bookings", { params: { query } }),
+      );
+      return { ...r, items: r.items as Booking[] };
+    },
+    adminCancelBooking(id: string, reason: string, key: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/admin/bookings/{id}/cancel", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": key } },
+            body: { reason },
+          }),
+        ),
+      );
+    },
+    async adminSubscriptions(
+      query: paths["/api/admin/subscriptions"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(
+        await client.GET("/api/admin/subscriptions", { params: { query } }),
+      );
+    },
+    async adminPlans(
+      query: paths["/api/admin/subscription-plans"]["get"]["parameters"]["query"] = {},
+    ) {
+      return result(
+        await client.GET("/api/admin/subscription-plans", { params: { query } }),
+      );
+    },
+    adminArchivePlan(id: string) {
+      return mutate(async (headers) =>
+        result(
+          await client.POST("/api/admin/subscription-plans/{id}/archive", {
+            headers,
+            params: { path: { id }, header: { "Idempotency-Key": crypto.randomUUID() } },
+          }),
+        ),
+      );
+    },
+    async adminDictionary(
+      kind: "cities" | "directions",
+      query: { page?: number; pageSize?: number; isActive?: boolean } = {},
+    ) {
+      return result(
+        kind === "cities"
+          ? await client.GET("/api/admin/cities", { params: { query } })
+          : await client.GET("/api/admin/directions", { params: { query } }),
+      );
+    },
+    adminCreateDictionary(kind: "cities" | "directions", body: components["schemas"]["DictionaryWrite"]) {
+      return mutate(async (headers) =>
+        result(
+          kind === "cities"
+            ? await client.POST("/api/admin/cities", { headers, body })
+            : await client.POST("/api/admin/directions", { headers, body }),
+        ),
+      );
+    },
+    adminEditDictionary(kind: "cities" | "directions", id: string, body: components["schemas"]["DictionaryWrite"]) {
+      return mutate(async (headers) =>
+        result(
+          kind === "cities"
+            ? await client.PATCH("/api/admin/cities/{id}", { headers, params: { path: { id } }, body })
+            : await client.PATCH("/api/admin/directions/{id}", { headers, params: { path: { id } }, body }),
+        ),
+      );
+    },
     async loyalty() {
       return result(await client.GET("/api/me/loyalty"));
     },
